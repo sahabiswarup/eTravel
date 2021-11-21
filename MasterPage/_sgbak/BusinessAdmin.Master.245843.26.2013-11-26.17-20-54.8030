@@ -1,0 +1,130 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="BusinessAdmin.master.cs" Inherits="e_Travel.MasterPage.BusinessAdmin" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <script src="../Scripts/jQuery/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="../Scripts/WebMessenger/stylesheets/zebra_dialog.css" />
+    <script src="../Scripts/WebMessenger/zebra_dialog.js" type="text/javascript"></script>  
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $(".signin").click(function (e) {
+                e.preventDefault();
+                $("fieldset#signin_menu").toggle();
+                $(".signin").toggleClass("menu-open");
+            });
+
+            $("fieldset#signin_menu").mouseup(function () {
+                return false
+            });
+            $(document).mouseup(function (e) {
+                if ($(e.target).parent("a.signin").length == 0) {
+                    $(".signin").removeClass("menu-open");
+                    $("fieldset#signin_menu").hide();
+                }
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+        <script src="../Scripts/jQuery/Extension.min.js" type="text/javascript"></script>
+        <div style = "width: 100%; height: auto">
+            <div id = "headerSection">
+                <div class = "ContentContainer">
+                    <div class = "contentWrapper">
+                        <div id = "bannerLeft">
+                            <a href = "<%= ResolveClientUrl("~/BusinessAdmin/BusAdminDefault.aspx") %>"><asp:Image id = "BusLogo" runat="server"></asp:Image></a>
+                        </div>
+                        <div id = "bannerRight">
+                            <div id="TopUserMenuWrapper">
+                                <div id="topnav" class="topnav">
+                                    <a href="login" class="signin"><asp:Label id = "UserNameLabel" runat="server" Text=""></asp:Label></a>
+                                </div>    
+                                <fieldset id="signin_menu">
+                                    <div style = "border: 3px solid #908e8e; padding: 12px;">
+                                        <div style = "float: right; margin-top: -29px;">
+                                            <img src="../App_Themes/BusinessAdminDefault/Images/UserMenuTop.png" />
+                                        </div>
+                                        <div style = "width: 100%; float: left;">
+                                            <b>Your Last Login Details</b> <br />
+                                            24th November 2013 13:06:00
+                                        </div>
+                                        <hr style = "width: 100%; float: left; color: #FFFFFF; margin: 5px 0 5px;" />
+                                        <div style = "">
+                                            <a href = "#">Change password</a>
+                                            <br style = "margin: 5px 0 5px;" />
+                                            <asp:LoginStatus runat="server"></asp:LoginStatus>
+                                        </div>
+                                    </div>
+                                </fieldset>     
+                            </div>                   
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id = "topMenuSection">
+                <div class = "ContentContainer">
+                    <div class = "TopMenuWrapper">
+                        <asp:Menu ID="Menu1" runat="server" skinid = "topMenuSkin">
+                            <Items>
+                                <asp:MenuItem Text="Home" Value="HomeMenu" NavigateUrl="~/BusinessAdmin/BusAdminDefault.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Package Configuration" Value="ConfigurationMenu">
+                                    <asp:MenuItem Text="Itinerary Master" Value="ItineraryMaster" NavigateUrl="~/BusinessAdmin/ItineraryMaster.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Accommodation Master" Value="AccommodationMaster" NavigateUrl="~/BusinessAdmin/AccommodationMaster.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Accommodation Type Wise Room Rate" Value="AccommodationTypeRoomRate" NavigateUrl="~/BusinessAdmin/ConfigAccTypeWiseRoomRate.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Accommodation Wise Room Rate" Value="AccommodationRoomRate" NavigateUrl="~/BusinessAdmin/ConfigAccWiseRoomRate.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Tour Package Configuration" Value="TourPackageConfig" NavigateUrl="~/BusinessAdmin/TpkConfigPackage.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Discount/Offer Configuration" Value="DiscountConfiguration" NavigateUrl="~/BusinessAdmin/ConfigDiscount.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Search Tour Package" Value="SearchTourPackage" NavigateUrl="~/BusinessAdmin/SearchTpk.aspx"></asp:MenuItem>
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="Public Website Content" Value="PublicWebsiteMenu">
+                                    <asp:MenuItem Text="About Us" Value="AboutUs" NavigateUrl="~/BusinessAdmin/ReqAboutUs.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Contact Us" Value="ContactUs" NavigateUrl="~/BusinessAdmin/ReqContactUs.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Membership/Registration" Value="Membership" NavigateUrl="~/BusinessAdmin/ReqMembership.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Testimonials" Value="Testimonials" NavigateUrl="~/BusinessAdmin/ReqTestimonials.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="User Agreement" Value="UserAgreement" NavigateUrl="~/BusinessAdmin/ReqUserAgreement.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Social Network" Value="SocialNetwork" NavigateUrl="~/BusinessAdmin/SocialNetworkDtls.aspx"></asp:MenuItem>
+                                    <asp:MenuItem Text="Booking Policy" Value="BookingPolicy" NavigateUrl="~/BusinessAdmin/ReqBookingPolicy.aspx"></asp:MenuItem>
+                                     <asp:MenuItem Text="Destination Detail" Value="Destination" NavigateUrl="~/BusinessAdmin/DestinationDtlMaster.aspx"></asp:MenuItem>
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="User Management" Value="UserManagementMenu">
+                                    <asp:MenuItem Text="Register User" Value="RegisterUserSubMenu"></asp:MenuItem>
+                                    <asp:MenuItem Text="View/Manage User" Value="ViewManageUserSubMenu"></asp:MenuItem>
+                                </asp:MenuItem>
+                            </Items>
+                        </asp:Menu>
+                    </div>
+                </div>
+            </div>
+            <div class="mainContainer">
+                <div class = "ContentContainer">
+                    <div class = "contentWrapper">
+                        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+                    </div>
+                </div>
+            </div>
+            <div style = "clear: both;"></div>
+            <%--Footer Section--%>
+            <div id = "footer-Saperator"></div>
+            <div id="footer-wrap">
+                <div class="ContentContainer">
+                    <div class = "contentWrapper">
+                        <div class = "footer-Link">
+                            <a href = "#" class = "footerLinks">Disclaimer</a>  |  <a href = "#" class = "footerLinks">Terms of Use</a>  |  <a href="#" class = "footerLinks">Contact us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style = "clear: both;"></div>
+    </form>
+</body>
+</html>

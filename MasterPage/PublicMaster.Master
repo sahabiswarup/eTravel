@@ -1,0 +1,134 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="PublicMaster.master.cs" Inherits="e_Travel.MasterPage.PublicMaster" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+    <title></title>
+    <script src="../Scripts/jQuery/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="../Scripts/WebMessenger/stylesheets/zebra_dialog.css" />
+    <script src="../Scripts/WebMessenger/zebra_dialog.js" type="text/javascript"></script>  
+
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+        <div style = "width: 100%; height: auto">
+        <div id = "headerSection">
+            <div class = "ContentContainer">
+                <div class = "contentWrapper">
+                    <div id = "bannerLeft"></div>
+                    <div id = "bannerRignt"></div>
+                </div>
+            </div>
+        </div>
+        <div id = "topMenuSection">
+            <div class = "ContentContainer">
+                <div class = "TopMenuWrapper">
+                    <asp:Menu ID="Menu1" runat="server" skinid = "topMenuSkin">
+                        <Items>
+                            <asp:MenuItem Text="Configuration" Value="ConfigurationMenu">
+                             <asp:MenuItem Text="Country Master" Value="ViewManageCountrySubMenu" NavigateUrl="~/PortalAdmin/CountryMaster.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Travel Segment Master" Value="TravelSegmentSubMenu" NavigateUrl="~/PortalAdmin/TravelSegment.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Destination/Zone Master" Value="DestZoneSubMenu" NavigateUrl="~/PortalAdmin/DestinationMaster.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Register Business" Value="RegisterBusinessSubMenu" NavigateUrl="~/PortalAdmin/RegisterBusiness.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Package Type Master" Value="ViewManagePackageTypeSubMenu" NavigateUrl="~/PortalAdmin/PackageTypeMaster.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Vehicle Type Master" Value="ViewManageVehicleTypeSubMenu" NavigateUrl="~/PortalAdmin/VehicleTypeMaster.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Accommodation Type  Master" Value="ViewManageAccommodationTypeSubMenu" NavigateUrl="~/PortalAdmin/AccommodationTypeMaster.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Room Plan  Master" Value="ViewManageRoomPlanSubMenu" NavigateUrl="~/PortalAdmin/RoomPlanMaster.aspx"></asp:MenuItem>
+                            </asp:MenuItem>
+                            <asp:MenuItem Text="User Management" Value="UserManagementMenu">
+                                <asp:MenuItem Text="Register User" Value="RegisterUserSubMenu"></asp:MenuItem>
+                                <asp:MenuItem Text="View/Manage User" Value="ViewManageUserSubMenu"></asp:MenuItem>
+                            </asp:MenuItem>
+                        </Items>
+                    </asp:Menu>
+                </div>
+            </div>
+        </div>        
+        <div class="mainContainer">
+        
+            <div class = "ContentContainer">
+            <%--<fieldset style="width:370px;padding:5px;">--%>
+            <fieldset style="width:290px;padding:5px;display:inline-block; vertical-align:top;background-color: #10728F;border-radius: 10px 10px 10px 10px;color: #FFFFFF;margin-top:20px;margin-left:10px;font-weight:bold;">
+           <div style="font-size:16px; line-height:30px; padding-bottom:15px;text-align:center;"  >My Preferred Destination </div>
+                <div id="leftCols" style="display: inline-block;float: left;width: 290px;">
+                    <div id="insideLeftCols" style="padding:5px;float:left;width:280px;">
+                     <div class="row" style="margin-bottom:10px;">
+                     <label for="TravelSegmentDropDown">Destination</label>
+                            <asp:DropDownList ID="DestinationDropDown" runat="server" 
+                             ValidationGroup="ValidateData" Width = "270px" AppendDataBoundItems="True">
+                            </asp:DropDownList>
+                     </div>
+                       <div class="row" style="margin-bottom:10px;">
+                     <label for="PackageTypeDropDown">Holiday/Package Type</label>
+                            <asp:DropDownList ID="PackageTypeDropDown" runat="server"  AutoPostBack="false" ValidationGroup="ValidateData" Width = "270px" AppendDataBoundItems="True">
+                            </asp:DropDownList>
+                     </div>
+                     <div class="row" style="margin-bottom:10px;">
+                     <label for="AccTypeDropDown">Tour Duration</label>
+                        <asp:DropDownList ID="TourDurationDownList" runat="server" ValidationGroup="ValidateData" Width = "275px" AppendDataBoundItems="True">
+                        <asp:ListItem Value="0-0">--- Select Tour Duration ---</asp:ListItem>
+                        <asp:ListItem Value="2-4">2 to 4 Days</asp:ListItem>
+                        <asp:ListItem Value="5-6">5 to 6 Days</asp:ListItem>
+                        <asp:ListItem Value="7-8">7 to 8 Days</asp:ListItem>
+                        <asp:ListItem Value="9-10">9 to 10 Days</asp:ListItem>
+                        <asp:ListItem Value="11-12">11 to 12 Days</asp:ListItem>
+                        <asp:ListItem Value="13-14">13 to 14 Days</asp:ListItem>
+                        <asp:ListItem Value="15-500">Above 15 Days</asp:ListItem>
+                    </asp:DropDownList>
+                     </div>
+                      <div class="row" style="margin-bottom:10px;">
+                     <label for="RoomPlanDropDown">Room Plan</label>
+                            <asp:DropDownList ID="RoomPlanDropDown" runat="server"  AutoPostBack="false" ValidationGroup="ValidateData" Width = "270px" AppendDataBoundItems="True">
+                            </asp:DropDownList>
+                     </div>
+                        <div class="row" style="margin-bottom:10px;">
+                     <label for="VehicleTypeDropDown">Vehicle Type</label>
+                            <asp:DropDownList ID="VehicleTypeDropDown" runat="server"  AutoPostBack="false" ValidationGroup="ValidateData" Width = "270px" AppendDataBoundItems="True">
+                            </asp:DropDownList>
+                     </div>
+                     <div class="row" style="margin-bottom:10px;margin-right:20px;">
+                     <div style="display:inline-block; vertical-align:middle; width:130px;">Adult
+                         <asp:DropDownList ID="TotalAdultDropDown" runat="server"  AutoPostBack="false" ValidationGroup="ValidateData" Width = "50px" Height="30px" AppendDataBoundItems="True">
+                            </asp:DropDownList>
+                         </div>
+                         <div style="display:inline-block;">Children
+                         <asp:DropDownList ID="TotalChildrenDropDown" runat="server"  AutoPostBack="false" ValidationGroup="ValidateData" Width = "50px" Height="30px" AppendDataBoundItems="True">
+                            </asp:DropDownList>
+                         </div>
+                     </div>
+                     </div>
+                    
+                     <div class="row" style="margin-bottom:10px;float:right;margin-right:35px;">
+                     <asp:Button ID="SearchButton" runat="server" Text=" Search " CssClass="FromBodyButton"
+                                            ValidationGroup="ValidateData" Width="80px" 
+                             onclick="SearchButton_Click"/>
+                     </div>
+            </div>
+            </fieldset>
+                <div class = "contentWrapper" style="width:600px;display: inline-block;">
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+                </div>
+            </div>
+        </div>
+        <div style = "clear: both;"></div>
+        <%--Footer Section--%>
+        <div id = "footer-Saperator"></div>
+        <div id="footer-wrap">
+            <div class="ContentContainer">
+                <div class = "contentWrapper">
+                    <div class = "footer-Link">
+                        <a href = "#" class = "footerLinks">Disclaimer</a>  |  <a href = "#" class = "footerLinks">Terms of Use</a>  |  <a href="#" class = "footerLinks">Contact us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div style = "clear: both;"></div>
+    </form>
+</body>
+</html>

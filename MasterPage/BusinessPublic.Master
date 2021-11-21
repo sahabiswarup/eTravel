@@ -1,0 +1,85 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="BusinessPublic.master.cs" Inherits="e_Travel.MasterPage.BusinessPublic" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+    <link rel="stylesheet" type="text/css" href="../Scripts/WebMessenger/stylesheets/zebra_dialog.css" />
+    <script src="../Scripts/WebMessenger/zebra_dialog.js" type="text/javascript"></script>  
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div id = "HeaderSection">
+            <div id="HeaderWrap">
+                <div id="HeaderLogo">
+                    <a title="" href="Default.aspx"><img id = "BusLogoImg" runat = "server" alt="Business Logo" title = "Business Logo" /></a>
+                </div>
+                <div id = "HeaderLinksWrap">
+                    <div id = "HeaderLinks">
+                        Login or Register Here
+                    </div>
+                    <div id = "HeaderSocialLinks">
+                    <div class="SocialTouch">
+                        <ul>
+                            <li><a href="#" class="main_sprite facebook_icon">
+                                &nbsp;</a></li>
+                            <li><a href="#" class="main_sprite twitter_icon">&nbsp;</a></li>
+                            <li><a href="#" class="main_sprite gplus_icon" style="margin-right:0px">
+                                &nbsp;</a></li>
+                        </ul>
+
+                    </div>
+                        
+                    </div>            
+                </div>
+            </div>
+        </div>
+
+        <div id = "MenuBarSection">
+            <div id = "MenuWrap">
+                <asp:Menu ID="BusPublicMenu" runat="server" skinid = "topMenuSkin"></asp:Menu>
+            </div>
+        </div>
+
+        <div id = "ContentPlaceSection">
+            <div id = "ContentPlaceWrap">
+                <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server"></asp:ContentPlaceHolder>
+            </div>
+        </div>
+
+        <div id = "FooterSection">
+            <div class="wrap">
+                <div id="biolaFooter">
+                    <div id="navBiolaSupplemental" runat = "server">
+                        <ul>
+                            <li class="photogallery"><a href="#">Photo Gallery</a></li>
+                            <li class="destination"><a href="#">Destinations</a></li>
+                            <li class="testimonial"><a href="#">Testimonial</a></li>
+                            <li class="feedback"><a href="#">Leave Us Feedback</a></li>
+                        </ul>
+                    </div>
+                    <div id="siteinfo">
+                        <div class="vcard" id="siteinfoContact">
+                            <div class="org fn">Tour Ginie</div>
+                            <div class="adr" id="biola-address">
+                                <span id = "BusAddSpan" runat = "server" class="street-address"></span>,
+                                <span id = "BusCitySpan" runat = "server" class="locality"></span>&nbsp;-
+                                <span id = "BusZipSpan" runat = "server" class="postal-code"></span>
+                            </div>
+                        </div>
+                        <asp:Literal id = "BottomLeftLinkLiteral" runat="server"></asp:Literal>
+                        <div id="siteinfoLegal">
+                            <div id = "BusNameDiv" runat = "server"></div>
+                            <div>All Right Reserved.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style = "clear: both;"></div>
+    </form>
+</body>
+</html>

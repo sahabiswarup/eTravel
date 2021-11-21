@@ -1,0 +1,199 @@
+﻿.ucGridView    
+{
+    border-spacing:0;
+    border-collapse:separate;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -khtml-border-radius: 0px;
+    border-radius: 0px;
+    border: 1px solid #A4ABB2; 
+    background-attachment: scroll;
+    background-clip: border-box;
+    background-color: white;
+    background-image: none;
+    background-origin: padding-box;
+    color: #3B3B3B;
+    display: block;
+    font: 12px/16px "segoe ui",arial,sans-serif;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    margin: 0px;
+    padding: 0px;
+    table-layout: fixed;
+    z-index: auto;
+    empty-cells: show;
+    display: table;
+    border-color: gray;
+
+}  
+
+.ucGridView tbody tr
+{
+    cursor: default;
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+    empty-cells: show;
+    
+}
+.ucGridView th    
+{
+    padding-left: 8px;
+    overflow: hidden;
+    border: solid #A4ABB2;
+    background-color: #B8BDC2;  
+    border-width: 0 0 1px 1px;
+    empty-cells: show;
+    text-align: left;
+    font-weight: bold;
+    height: 35px;
+}
+.ucGridView th a   
+{
+    text-decoration: none;
+    color: inherit;
+}
+.ucGridView td    
+{
+    vertical-align: inherit;
+    border-color: inherit;
+    empty-cells: show;
+    border-color: #D0D7E5;
+    padding-left: 8px;
+    padding-right: 8px;
+    height: 30px;
+}  
+.ucGridView .NormalRow 
+{ 
+    background-color: #FFFFFF;   
+} 
+.ucGridView .alt 
+{ 
+    background-color: #ececec;   
+}  
+.ucGridView .SelectRow 
+{ 
+    font-weight: bold;
+    background: #fee2aa;
+}  
+.ucGridView tbody tr.NormalRow:hover, .ucGridView tbody tr.alt:hover
+{
+	background-color: #FEE2AA;
+	color: black;
+	font-weight: bold;
+}
+
+.ucGridView .pgr 
+{
+    cursor:default;
+    background-color: #B8BDC2;  
+    height: 34px;
+    vertical-align: middle; 
+    text-align: center;
+}  
+.ucGridView .pgr table  
+{
+    width: 100%;
+    border-spacing: 0;
+    display: table;
+    border-collapse: separate;
+    empty-cells: show;
+    border-color: gray;
+}  
+.ucGridView .pgr table tbody 
+{
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+.ucGridView .pgr table tbody tr
+{
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+.ucGridView .ucGDWrap {
+    float: left;
+    padding: 0 10px;
+    line-height: 22px;
+    white-space: nowrap;
+    display:block;
+}
+.ucGridView .ucGDArrPart1 {
+    padding-right: 0;
+}
+.ucGridView .ucGDNumPart {
+    padding: 0;
+    vertical-align: middle;
+}
+.ucGridView .ucGDArrPart2 {
+    padding-left: 0;
+}
+.ucGridView .ucGDInfoPart {
+    float: right;
+}
+.ucGridView .pgr .ucGDPageFirst, .ucGridView .pgr .ucGDPagePrev, .ucGridView .pgr .ucGDPageNext, .ucGridView .pgr .ucGDPageLast
+{
+    background-image: url('Images/sprite.png');
+    width: 17px;
+    height: 17px;
+    vertical-align: top;
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    font-size: 1px;
+    cursor: pointer;
+    -webkit-box-align: center;
+    text-align: center;
+}
+.ucGridView .pgr .ucGDPageFirst
+{
+    margin: 4px 3px 0 0;
+    background-position: 0 0px;
+}
+.ucGridView .pgr .ucGDPageFirst:hover
+{
+    background-position: 0 -18px;
+}
+.ucGridView .pgr .ucGDPagePrev
+{
+    margin: 4px 3px 0 0;
+    background-position: -18px 0;
+}
+.ucGridView .pgr .ucGDPagePrev:hover
+{
+    background-position: -18px -18px;
+}
+.ucGridView .pgr .ucGDPageNext
+{
+    margin: 4px 0 0 5px;
+    background-position: -36px 0;
+}
+.ucGridView .pgr .ucGDPageNext:hover
+{
+    background-position: -36px -18px;
+}
+.ucGridView .pgr .ucGDPageLast
+{
+    margin: 4px 0 0 3px;
+    background-position: -54px 0;
+}
+.ucGridView .pgr .ucGDPageLast:hover
+{
+    background-position: -54px -18px;
+}
+
+.ucGridView .styledDropDown
+{
+    font: 1em 'Helvetica Neue', Helvetica, 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
+	color: #666;
+	border: 1px solid #ccc;
+	background: #fff;
+	padding: 3px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-khtml-border-radius: 5px;
+}

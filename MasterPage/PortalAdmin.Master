@@ -1,0 +1,98 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="PortalAdmin.master.cs"
+    Inherits="e_Travel.MasterPage.PortalAdmin" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" content="IE=edge">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+    <script src="../Scripts/jQuery/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="../Scripts/WebMessenger/stylesheets/zebra_dialog.css" />
+    <script src="../Scripts/WebMessenger/zebra_dialog.js" type="text/javascript"></script>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <asp:ScriptManager runat="server">
+    </asp:ScriptManager>
+    <div style="width: 100%; height: auto">
+        <div id="headerSection">
+            <div class="ContentContainer">
+                <div class="contentWrapper">
+                    <div id="bannerLeft">
+                    </div>
+                    <div id="bannerRignt">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="topMenuSection">
+            <div class="ContentContainer">
+                <div id="MenuWrap" class="TopMenuWrapper" runat="server">
+                    <asp:Menu ID="PortalAdminMenu" runat="server" SkinID="topMenuSkin">
+                        <Items>
+                            <asp:MenuItem Text="CMS" Value="CMS"></asp:MenuItem>
+                            <asp:MenuItem Text="Configuration" Value="ConfigurationMenu">
+                                <asp:MenuItem Text="Country Master" Value="ViewManageCountrySubMenu" NavigateUrl="~/PortalAdmin/CountryMaster.aspx">
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="Organisation Master" Value="OrganisationMasterSubMenu" NavigateUrl="~/PortalAdmin/OrganisationMaster.aspx">
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="Social Network Master" Value="SocialNetworkSubMenu" NavigateUrl="~/PortalAdmin/MstSocialNetwork.aspx">
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="Travel Segment Master" Value="TravelSegmentSubMenu" NavigateUrl="~/PortalAdmin/TravelSegment.aspx">
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="Destination/Zone Master" Value="DestZoneSubMenu" NavigateUrl="~/PortalAdmin/DestinationMaster.aspx">
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="Register Business" Value="RegisterBusinessSubMenu" NavigateUrl="~/PortalAdmin/RegisterBusiness.aspx">
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="Package Type Master" Value="ViewManagePackageTypeSubMenu" NavigateUrl="~/PortalAdmin/PackageTypeMaster.aspx">
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="Vehicle Type Master" Value="ViewManageVehicleTypeSubMenu" NavigateUrl="~/PortalAdmin/VehicleTypeMaster.aspx">
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="Accommodation Type  Master" Value="ViewManageAccommodationTypeSubMenu"
+                                    NavigateUrl="~/PortalAdmin/AccommodationTypeMaster.aspx"></asp:MenuItem>
+                                <asp:MenuItem Text="Room Plan  Master" Value="ViewManageRoomPlanSubMenu" NavigateUrl="~/PortalAdmin/RoomPlanMaster.aspx">
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="Configure CMS Menu " Value="ConfigCMSMenuSubMenu" NavigateUrl="~/PortalAdmin/ConfigBusCMSMenu.aspx">
+                                </asp:MenuItem>
+                            </asp:MenuItem>
+                            <asp:MenuItem Text="User Management" Value="UserManagementMenu">
+                                <asp:MenuItem Text="Register User" Value="RegisterUserSubMenu" NavigateUrl="~/Account/CreateUser.aspx">
+                                </asp:MenuItem>
+                                <asp:MenuItem Text="View/Manage User" Value="ViewManageUserSubMenu" NavigateUrl="~/Account/ManageUser.aspx">
+                                </asp:MenuItem>
+                            </asp:MenuItem>
+                        </Items>
+                    </asp:Menu>
+                </div>
+            </div>
+        </div>
+        <div class="mainContainer">
+            <div class="ContentContainer">
+                <div class="contentWrapper">
+                    <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+                    </asp:ContentPlaceHolder>
+                </div>
+            </div>
+        </div>
+        <div style="clear: both;">
+        </div>
+        <%--Footer Section--%>
+        <div id="footer-Saperator">
+        </div>
+        <div id="footer-wrap">
+            <div class="ContentContainer">
+                <div class="contentWrapper">
+                    <div class="footer-Link">
+                        <a href="#" class="footerLinks">Disclaimer</a> | <a href="#" class="footerLinks">Terms
+                            of Use</a> | <a href="#" class="footerLinks">Contact us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="clear: both;">
+    </div>
+    </form>
+</body>
+</html>

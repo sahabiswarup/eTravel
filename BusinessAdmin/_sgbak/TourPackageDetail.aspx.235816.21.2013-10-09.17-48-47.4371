@@ -1,0 +1,1180 @@
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage/BusinessAdmin.Master"
+    AutoEventWireup="true" CodeBehind="TourPackageDetail.aspx.cs" Inherits="e_Travel.BusinessAdmin.TourPackageDetail" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <link href="../Scripts/JqueyUI/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script src="../Scripts/JqueyUI/jquery-ui.js" type="text/javascript"></script>
+    <link href="../Scripts/FancyBox/jquery.fancybox-1.3.4.css" rel="stylesheet" type="text/css" />
+    <link href="../Scripts/FancyBox/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+    <script src="../Scripts/FancyBox/jquery.fancybox.js" type="text/javascript"></script>
+    <script src="../Scripts/FancyBox/jquery.fancybox.pack.js" type="text/javascript"></script>
+    <script src="../Scripts/FancyBox/jquery.mousewheel-3.0.4.pack.js" type="text/javascript"></script>
+    <script src="../Scripts/FancyBox/jquery.mousewheel-3.0.6.pack.js" type="text/javascript"></script>
+    <link href="../Scripts/FancyBox/jquery.fancybox-buttons.css" rel="stylesheet" type="text/css" />
+    <script src="../Scripts/FancyBox/jquery.fancybox-buttons.js" type="text/javascript"></script>
+    <script src="../Scripts/FancyBox/jquery.fancybox-media.js" type="text/javascript"></script>
+    <link href="../Scripts/FancyBox/jquery.fancybox-thumbs.css" rel="stylesheet" type="text/css" />
+    <script src="../Scripts/FancyBox/jquery.fancybox-thumbs.js" type="text/javascript"></script>
+    <style type="text/css">
+        .formViewTableStyle
+        {
+            width: 100%;
+        }
+        .GridStyle tr td{width:260px; border-bottom:20px solid transparent;}
+        .grayBackground
+        {
+            background-color:Gray;
+        }
+        .gridTextBox
+        {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+        .gridSelect
+        {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+         .gridDetailTextBox
+        {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+        .gridDetailSelect
+        {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+        #gallery-wrap
+        {
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+            width: 650px;
+        }
+        #gallery
+        {
+            position: relative;
+            left: 0;
+            top: 0;
+            list-style: none outside none;
+        }
+        #gallery li
+        {
+            float: left;
+            margin: 0 20px 15px 0;
+        }
+        #gallery li a img
+        {
+            float: left;
+            border: 4px solid #40331b;
+            height: 175px;
+            width: 160px;
+        }
+        
+        #gallery-controls
+        {
+            margin: 0 auto; /*width: 732px;*/
+        }
+        #gallery-prev
+        {
+            float: left;
+        }
+        #gallery-next
+        {
+            float: right;
+        }
+        .clear
+        {
+            clear: both;
+        }
+    </style>
+    <script type="text/javascript">
+        function pageLoad(sender, args) {
+           // $("select").combobox();
+         if($('[id$=ResultTabOpenHiddenField]').val()!="")
+        {
+                 $('#PackageDetail').trigger('click');
+        }
+         $("#PackageDetail").fancybox({
+            'titleShow'     : true,
+            'transitionIn'  : 'elastic',
+            'transitionOut': 'elastic'
+        }); 
+            maintainImageGallery();
+            $('[id$=SelectTest]').click(function () {
+                alert("here");
+                suggestVehicleType();
+            });
+            $('[id$=NoOfVehicleDropDownList]').change(function () {
+                $('#VehicleHeader').children().remove();
+                $('#VehicleList').children().remove();
+                var i;
+                var loopUpto = $('[id$=NoOfVehicleDropDownList]').val();
+                $('#VehicleHeader').append('<hr/><p style="margin-left:100px;display:inline-block;"> Vehicle Type</p>  <p style="margin-left:40px;display:inline-block;">  Pax</p>');
+
+                for (i = 1; i <= loopUpto; i++) {
+                    $('#VehicleList').append('<p>Vehicle ' + i + '<input class="gridTextBox" type="text"/><select class="gridVehicleTypeSelect" style="width:60px;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></p><div style="clear:both;height:2px;"></div>');
+
+                }
+                $('#VehicleList').append('<hr/><div style="clear:both;height:5px;"></div>');
+                $('[id$=SelectedVehicleTypeHiddenField]').val("");
+                suggestVehicleType();
+            });
+            $('[id$=RoomNumberDropDownList]').change(function () {
+                $('#RoomHeader').children().remove();
+                $('#RoomList').children().remove();
+                var i;
+                var loopUpto = $('[id$=RoomNumberDropDownList]').val();
+                $('#RoomHeader').append('<hr/><p style="margin-left:100px;display:inline-block;"> Adult</p>  <p style="margin-left:40px;display:inline-block;"> Children</p>');
+                for (i = 1; i <= loopUpto; i++) {
+                    $('#RoomList').append('<p>Room ' + i + '<select class="gridSelect" style="width:100px;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select><select class="gridRoomSelect" style="width:100px;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value=3">3</option></select></p><div style="clear:both;height:2px;"></div>');
+
+                }
+                $('#RoomList').append('<hr/><div style="clear:both;height:5px;"></div>');
+            });
+            $('[id$=DetailVehicleCountDropDownList]').change(function () {                
+                $('#DetailVehicleHeader').children().remove();
+                $('#DetailVehicleType').children().remove();
+                var i;
+                var loopUpto = $('[id$=DetailVehicleCountDropDownList]').val();
+                $('#DetailVehicleHeader').append('<hr/><p style="margin-left:100px;display:inline-block;"> Vehicle Type</p>  <p style="margin-left:40px;display:inline-block;">  Pax</p>');
+                for (i = 1; i <= loopUpto; i++) {
+                    $('#DetailVehicleType').append('<p>Vehicle ' + i + '<input class="gridDetailTextBox" type="text"/><select style="width:60px;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select></p><div style="clear:both;height:2px;"></div>');
+                }
+                $('#DetailVehicleType').append('<hr/><div style="clear:both;height:5px;"></div>');
+                $('[id$=SelectedVehicleTypeHiddenField]').val();
+                suggestDetailVehicleType();
+            });
+            $('[id$=DetailRoomNumberDropDownList]').change(function ()
+                {
+                
+                $('#DetailRoomHeader').children().remove();
+                $('#DetailRoomNumber').children().remove();
+                var i;
+                var loopUpto = $('[id$=DetailRoomNumberDropDownList]').val();
+                $('#DetailRoomHeader').append('<hr/><p style="margin-left:100px;display:inline-block;"> Adult</p>  <p style="margin-left:40px;display:inline-block;"> Children</p>');
+                for (i = 1; i <= loopUpto; i++) {
+                    $('#DetailRoomNumber').append('<p>Room ' + i + '<select class="gridDetailSelect" style="width:100px;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value=3">3</option></select><select class=gridSelect style="width:100px;"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value=3">3</option></select></p><div style="clear:both;height:2px;"></div>');
+                }
+                $('#DetailRoomNumber').append('<hr/><div style="clear:both;height:5px;"></div>');
+            });
+        }
+    
+    </script>
+    <script type="text/javascript">
+        function suggestVehicleType() {
+            alert("here");
+            $('[id$=SelectTest]').each(function (index, value) {
+                var projects = $.parseJSON($('[id$=VehicleTypeListHiddenField]').val());
+               
+                $(value).autocomplete({
+                    minLength: 0,
+                    source: projects,
+                    focus: function (event, ui) {
+                        $(value).val(ui.item.label);
+                        return false;
+                    },
+                    select: function (event, ui) {
+                        $(value).val(ui.item.label);
+                        $('[id$=SelectedVehicleTypeHiddenField]').val($('[id$=SelectedVehicleTypeHiddenField]').val() + ui.item.value + ',');
+                        return false;
+                    }
+                })
+            .data("ui-autocomplete")._renderItem = function (ul, item) {
+                return $("<li>")
+            .append("<a>" + item.label + "<br/>" + "Max Pax :" + item.Capacity + "</a>")
+            .appendTo(ul);
+            };
+
+            });
+    }
+    function suggestDetailVehicleType() {
+        $(".gridDetailTextBox").each(function (index, value) {
+            var projects = $.parseJSON($('[id$=VehicleTypeListHiddenField]').val());
+            $(value).autocomplete({
+                minLength: 0,
+                source: projects,
+                focus: function (event, ui) {
+                    $(value).val(ui.item.label);
+                    return false;
+                },
+                select: function (event, ui) {
+                    $(value).val(ui.item.label);
+                    $('[id$=SelectedDetailVehicleTypeHiddenField]').val($('[id$=SelectedDetailVehicleTypeHiddenField]').val()  + ui.item.value+',');
+                    return false;
+                }
+            })
+            .data("ui-autocomplete")._renderItem = function (ul, item) {
+                return $("<li>")
+            .append("<a>" + item.label + "<br/>" + "Max Pax :" + item.Capacity + "</a>")
+            .appendTo(ul);
+            };
+
+        });
+    }
+    function ValidateBasicData() {
+
+        var Adult = $('[id$=NoOfAdultDropDownList]').val()
+        var Child = $('[id$=NoOfChildDropDownList]').val()
+        var AdultCount = 0;
+        var ChildCount = 0;
+        var AdultRoomList = new Array();
+        var ChildRoomList = new Array();
+        var TotalRoom = $('[id$=RoomNumberDropDownList]').val();
+        if (Child > 0) {
+            //do nothing
+        }
+        else {
+            Child = 0;
+        }
+        
+        $('#RoomList select.gridSelect').each(function (index, value) {
+            var t = $(value).val();
+            t = parseInt(t);
+            AdultRoomList[index] = t;
+            AdultCount = AdultCount + t;
+
+        });
+        
+        $('#RoomList select.gridRoomSelect').each(function (index, value) {
+            var t = $(value).val();
+            t = parseInt(t);
+            ChildRoomList[index] = t;
+            ChildCount = ChildCount + t;
+
+        });
+        for (i = 0; i < TotalRoom; i++)
+        {
+           var  TotalAdult = AdultRoomList[i];
+            var TotalChild = ChildRoomList[i];
+            var TotalPerRoom = TotalAdult + TotalChild;
+            if (TotalPerRoom > 4)
+            {
+                $.Zebra_Dialog('Only 4 Person Per Room');
+                return false;
+            }
+            if (TotalAdult == 0) {
+                $.Zebra_Dialog('1 Adult Must Be Exist In Each Room');
+                return false;
+            }
+        }
+                   
+
+        $('[id$=SelectedRoomListHiddenField]').val("");
+        $('[id$=PaxListForVehicleHiddenField]').val("");
+            if ($('[id$=ArrivalDateTextBox]').val() == "") {
+                $.Zebra_Dialog('Arrival Date Is Required');
+                return false;
+            }
+            else if ($('[id$=AccommodationTypeDropDownList]').val() == "0") {
+                $.Zebra_Dialog('Accomadation Type Is Required');
+                return false;
+            }
+            else if ($('[id$=RoomPlanDropDownList]').val() == "0") {
+                $.Zebra_Dialog('You Must Select Room Plan');
+                return false;
+            }
+            else if ($('[id$=RoomNumberDropDownList]').val() == "0") {
+                $.Zebra_Dialog('Provide Number Of Room  Required');
+                return false;
+            }
+            else if ($('[id$=NoOfAdultListBox]').val() == "0") {
+                $.Zebra_Dialog('Number Of Adult Cannot Be 0');
+                return false;
+            }          
+           
+           
+            else
+                if (AdultCount > Adult) {
+                    $.Zebra_Dialog('Total Adult(s) in Room is Greater than total adult Arriving');
+                    return false;
+                }
+                else if (AdultCount != Adult) {
+                    $.Zebra_Dialog('Total Adult(s) In Room Did Not Match With Total Arrival Adult(s)');
+                    return false;
+                }
+                else if (ChildCount != Child) {
+                    $.Zebra_Dialog('Total Childern(s) In Room Did Not Match With Arrival Childern(s)');
+                    return false;
+                }
+                else if (ChildCount > Child) {
+                    $.Zebra_Dialog('Total Childs in Room is Greater than total Child');
+                    return false;
+                }
+             else {
+                $('#RoomList select.gridSelect').each(function (index, value) {
+                    $('[id$=SelectedRoomListAdultHiddenField]').val($('[id$=SelectedRoomListAdultHiddenField]').val() + $(value).val() + ',');
+                });
+                $('#RoomList select.gridRoomSelect').each(function (index, value) {
+                    $('[id$=SelectedRoomListChildHiddenField]').val($('[id$=SelectedRoomListChildHiddenField]').val() + $(value).val() + ',');
+                });
+                $('#VehicleList select').each(function (index, value) {
+                    $('[id$=PaxListForVehicleHiddenField]').val($('[id$=PaxListForVehicleHiddenField]').val() + $(value).val() + ',');
+                });
+              
+                return true;
+            }
+        }
+        function ValidateDetailData() {
+            
+            var AdultCount = 0;
+            var ChildCount = 0;
+            var TotalRoom = $('[id$=DetailRoomNumberDropDownList]').val()
+            var Adult = $('[id$=NoOfAdultDropDownList2]').val()
+            var Child = $('[id$=NoOfChildDropDownList2]').val()
+            $('[id$=SelectedRoomListHiddenField]').val("");
+            $('[id$=PaxListForVehicleHiddenField]').val("");          
+           
+            if (TotalRoom == null) {
+                TotalRoom = 0;
+            }
+            var AdultRoomList = new Array();
+            var ChildRoomList = new Array();
+            
+
+            $('select.gridDetailSelect').each(function (index, value) {
+                var t = $(value).val();
+                t = parseInt(t);
+                AdultRoomList[index] = t;
+                AdultCount = AdultCount + t;
+            })
+
+            $('#DetailRoomNumber select.gridSelect').each(function (index, value) {
+                var t = $(value).val();
+                t = parseInt(t);
+                ChildRoomList[index] = t;
+                ChildCount = ChildCount + t;
+            })
+
+            for (i = 0; i < TotalRoom; i++)
+            {
+                var TotalAdult = AdultRoomList[i];
+                var TotalChild = ChildRoomList[i];
+                var TotalPerRoom = TotalAdult + TotalChild;
+                if (TotalPerRoom > 4)
+                {
+                    $.Zebra_Dialog('Only 4 Person Per Room');
+                    return false;
+                }
+                if (TotalAdult == 0) {
+                    $.Zebra_Dialog('1 Adult Must Be Exist In Each Room');
+                    return false;
+                }
+            }
+
+
+            if ($('[id$=DetailArrivalDateTextBox]').val() == "") {
+                $.Zebra_Dialog('Arrival Date Is Required');
+                return false;
+            }
+            else if ($('[id$=NoOfAdultDropDownList]').val() == "0") {
+                $.Zebra_Dialog('Number Of Adult Cannot Be 0');
+                return false;
+            }
+            else if ($('[id$=DetailRoomPlanDropDownList]').val() == "0") {
+                $.Zebra_Dialog('You Must Select Room Plan');
+                return false;
+            }
+            else if ($('[id$=DetailRoomNumberDropDownList]').val() == "0") {
+                $.Zebra_Dialog('Provide Number Of Room  Required');
+                return false;
+            }
+            else if (AdultCount > Adult) {
+                $.Zebra_Dialog('Adult in the room are greater than total adult arriving');
+                return false;
+            }
+            else if (ChildCount > Child) {
+                $.Zebra_Dialog('Childern in the room are greater than total childern arriving');
+                return false;
+            }
+            else
+                if (AdultCount != Adult) {
+                    $.Zebra_Dialog('Adults in Room Did Not Matched With Adult Arrivial');
+                    return false;
+                }
+                else if (ChildCount != Child) {
+                    $.Zebra_Dialog('Childs in Room Did Not Matched With Childs Arrivial');
+                    return false;
+                }
+                else {
+                    $('.grayBackground select').each(function (index, value) {
+                        $('[id$=SelectAccomadationListHiddenField]').val($('[id$=SelectAccomadationListHiddenField]').val() + $(value).val() + ',');
+                        
+                    });
+                 $('select.gridDetailSelect').each(function (index, value) {
+                    $('[id$=SelectedRoomListAdultHiddenField]').val($('[id$=SelectedRoomListAdultHiddenField]').val() + $(value).val() + ',');
+                });
+                $('#DetailRoomNumber select.gridDetailSelect').each(function (index, value) {                    
+                    $('[id$=SelectedRoomListChildHiddenField]').val($('[id$=SelectedRoomListChildHiddenField]').val() + $(value).val() + ',');
+                });
+                $('#DetailVehicleType select').each(function (index, value) {
+                    $('[id$=PaxListForVehicleHiddenField]').val($('[id$=PaxListForVehicleHiddenField]').val() + $(value).val() + ',');
+                });
+                $('.grayBackground span.dayno').each(function (value, index) {
+                    $('[id$=DayCountHiddenField]').val($('[id$=DayCountHiddenField]').val() + $(index).text().split(',') + ',');
+                    
+                });
+                }
+            return true;
+        }
+        
+    
+    </script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+    
+        $("#PackageDetail").fancybox({
+            'titleShow'     : true,
+            'transitionIn'  : 'elastic',
+            'transitionOut': 'elastic',
+        });
+        });
+        
+        function maintainImageGallery() {
+            $(".fancybox").fancybox({
+                beforeShow: function () {
+                    if (this.title) {
+
+                    }
+                },
+                buttons: {},
+                openEffect: 'fade',
+                closeEffect: 'fade',
+                closeBtn: true,
+                type: 'image'
+            });
+            var totalImages = jQuery("#gallery > li").length;
+            var imageWidth = jQuery("#gallery > li:first").outerWidth(true);
+            var totalWidth = imageWidth * totalImages;
+            var visibleImages = Math.round(jQuery("#gallery-wrap").width() / imageWidth);
+            var visibleWidth = visibleImages * imageWidth;
+            var stopPosition = (visibleWidth - totalWidth);
+            jQuery("#gallery").width(totalWidth);
+            jQuery("#gallery-prev").click(function () {
+
+                if (jQuery("#gallery").position().left < 0 && !jQuery("#gallery").is(":animated")) {
+                    jQuery("#gallery").animate({ left: "+=" + imageWidth + "px" });
+                }
+                return false;
+            });
+
+            jQuery("#gallery-next").click(function () {
+                if (jQuery("#gallery").position().left > stopPosition && !jQuery("#gallery").is(":animated")) {
+                    jQuery("#gallery").animate({ left: "-=" + imageWidth + "px" });
+                }
+                return false;
+            });
+
+
+        }
+    
+    </script>
+
+
+    <script type="text/javascript">
+
+        (function ($) {
+            $.widget("custom.combobox", {
+                _create: function () {
+                    this.wrapper = $("<span>")
+          .addClass("custom-combobox")
+          .insertAfter(this.element);
+
+                    this.element.hide();
+                    this._createAutocomplete();
+                    this._createShowAllButton();
+                },
+
+                _createAutocomplete: function () {
+                    var selected = this.element.children(":selected"),
+          value = selected.val() ? selected.text() : "";
+
+                    this.input = $("<input>")
+          .appendTo(this.wrapper)
+          .val(value)
+          .attr("title", "")
+          .addClass("custom-combobox-input ui-widget ui-widget-content ui-state-default ui-corner-left")
+          .autocomplete({
+              delay: 0,
+              minLength: 0,
+              source: $.proxy(this, "_source")
+          })
+          .tooltip({
+              tooltipClass: "ui-state-highlight"
+          });
+
+                    this._on(this.input, {
+                        autocompleteselect: function (event, ui) {
+                            ui.item.option.selected = true;
+                            this._trigger("select", event, {
+                                item: ui.item.option
+                            });
+                        },
+
+                        autocompletechange: "_removeIfInvalid"
+                    });
+                },
+
+                _createShowAllButton: function () {
+                    var input = this.input,
+          wasOpen = false;
+
+                    $("<a>")
+          .attr("tabIndex", -1)
+          .attr("title", "Show All Items")
+          .tooltip()
+          .appendTo(this.wrapper)
+          .button({
+              icons: {
+                  primary: "ui-icon-triangle-1-s"
+              },
+              text: false
+          })
+          .removeClass("ui-corner-all")
+          .addClass("custom-combobox-toggle ui-corner-right")
+          .mousedown(function () {
+              wasOpen = input.autocomplete("widget").is(":visible");
+          })
+          .click(function () {
+              input.focus();
+
+              // Close if already visible
+              if (wasOpen) {
+                  return;
+              }
+
+              // Pass empty string as value to search for, displaying all results
+              input.autocomplete("search", "");
+          });
+                },
+
+                _source: function (request, response) {
+                    var matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
+                    response(this.element.children("option").map(function () {
+                        var text = $(this).text();
+                        if (this.value && (!request.term || matcher.test(text)))
+                            return {
+                                label: text,
+                                value: text,
+                                option: this
+                            };
+                    }));
+                },
+
+                _removeIfInvalid: function (event, ui) {
+
+                    // Selected an item, nothing to do
+                    if (ui.item) {
+                        return;
+                    }
+
+                    // Search for a match (case-insensitive)
+                    var value = this.input.val(),
+          valueLowerCase = value.toLowerCase(),
+          valid = false;
+                    this.element.children("option").each(function () {
+                        if ($(this).text().toLowerCase() === valueLowerCase) {
+                            this.selected = valid = true;
+                            return false;
+                        }
+                    });
+
+                    // Found a match, nothing to do
+                    if (valid) {
+                        return;
+                    }
+
+                    // Remove invalid value
+                    this.input
+          .val("")
+          .attr("title", value + " didn't match any item")
+          .tooltip("open");
+                    this.element.val("");
+                    this._delay(function () {
+                        this.input.tooltip("close").attr("title", "");
+                    }, 2500);
+                    this.input.data("ui-autocomplete").term = "";
+                },
+
+                _destroy: function () {
+                    this.wrapper.remove();
+                    this.element.show();
+                }
+            });
+        })(jQuery);
+
+        $(function () {
+            $("#combobox").combobox({
+                select: function (event, ui) {
+                    alert(ui.item.value);
+                }
+            });
+        });
+    
+    </script>
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div style="width: 360px; display: inline-block; vertical-align: top;">
+        <fieldset style="width: 290px; padding: 0px; display: inline-block; vertical-align: top;
+            background-color: #10728F; border-radius: 10px 10px 10px 10px; color: #FFFFFF;
+            margin-top: 20px; margin-left: 10px; font-weight: bold; border: 3px solid black;">
+            <div style="font-size: 16px; line-height: 30px; padding-bottom: 15px; text-align: center;">
+                Configure & Book this Package
+            </div>
+            <div id="leftCols" style="display: inline-block; float: left; width: 290px;">
+                <div id="insideLeftCols" style="padding: 5px; float: left; width: 280px;">
+                    <div style="width: 100%; padding: 0; margin: 0">
+                        <label for="ArrivalDateTextBox">
+                            Arrival Date</label>
+                        <asp:TextBox ID="ArrivalDateTextBox" runat="server"></asp:TextBox>
+                        <ajaxToolkit:CalendarExtender ID="CalendarExtender1" runat="server" TargetControlID="ArrivalDateTextBox">
+                        </ajaxToolkit:CalendarExtender>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div style="width: 80px; display: inline-block; padding-left: 10px; line-height: 20px;">
+                            Adult</div>
+                        <div style="width: 80px; display: inline-block; padding-left: 10px; line-height: 20px;">
+                            Child
+                        </div>
+                        <div style="width: 80px; display: inline-block; padding-left: 10px; line-height: 20px;">
+                            Infant
+                        </div>
+                        <div style="clear: both;">
+                        </div>
+                        <asp:DropDownList ID="NoOfAdultDropDownList" runat="server" Height="24px" Width="80px">
+                        <asp:ListItem Text="1" Value="1"></asp:ListItem>
+                         <asp:ListItem Text="2" Value="2"></asp:ListItem>
+                          <asp:ListItem Text="3" Value="3"></asp:ListItem>
+                           <asp:ListItem Text="4" Value="4"></asp:ListItem>
+                            <asp:ListItem Text="5" Value="5"></asp:ListItem> 
+                            <asp:ListItem Text="6" Value="6"></asp:ListItem>
+                             <asp:ListItem Text="7" Value="7"></asp:ListItem>
+                              <asp:ListItem Text="8" Value="8"></asp:ListItem>
+                               <asp:ListItem Text="9" Value="9"></asp:ListItem>
+                                <asp:ListItem Text="10" Value="10"></asp:ListItem>
+                        </asp:DropDownList>
+                        <asp:DropDownList ID="NoOfChildDropDownList" runat="server" Height="24px" Width="80px">
+                        <asp:ListItem Text="1" Value="1"></asp:ListItem>
+                         <asp:ListItem Text="2" Value="2"></asp:ListItem>
+                          <asp:ListItem Text="3" Value="3"></asp:ListItem>
+                           <asp:ListItem Text="4" Value="4"></asp:ListItem>
+                            <asp:ListItem Text="5" Value="5"></asp:ListItem> 
+                            <asp:ListItem Text="6" Value="6"></asp:ListItem>
+                             <asp:ListItem Text="7" Value="7"></asp:ListItem>
+                              <asp:ListItem Text="8" Value="8"></asp:ListItem>
+                               <asp:ListItem Text="9" Value="9"></asp:ListItem>
+                                <asp:ListItem Text="10" Value="10"></asp:ListItem>
+                        </asp:DropDownList>
+                        <asp:DropDownList ID="NoOfInfantDropDownList" runat="server" Height="24px" Width="80px">
+                        <asp:ListItem Text="1" Value="1"></asp:ListItem>
+                         <asp:ListItem Text="2" Value="2"></asp:ListItem>
+                          <asp:ListItem Text="3" Value="3"></asp:ListItem>
+                           <asp:ListItem Text="4" Value="4"></asp:ListItem>
+                            <asp:ListItem Text="5" Value="5"></asp:ListItem> 
+                            <asp:ListItem Text="6" Value="6"></asp:ListItem>
+                             <asp:ListItem Text="7" Value="7"></asp:ListItem>
+                              <asp:ListItem Text="8" Value="8"></asp:ListItem>
+                               <asp:ListItem Text="9" Value="9"></asp:ListItem>
+                                <asp:ListItem Text="10" Value="10"></asp:ListItem>
+                        </asp:DropDownList>
+                       <%-- <asp:ListBox ID="NoOfAdultListBox" runat="server" Height="24px" Width="80px"></asp:ListBox>
+                        <asp:ListBox ID="NoOfChildListBox" runat="server" Height="24px" Width="80px"></asp:ListBox>
+                        <asp:ListBox ID="NoOfInfantListBox" runat="server" Height="24px" Width="80px"></asp:ListBox>--%>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <label for="ArrivalDateTextBox">
+                            Accomadation Type
+                        </label>
+                        <div style="clear: both;">
+                        </div>
+                        <asp:DropDownList ID="AccommodationTypeDropDownList" runat="server" AppendDataBoundItems="true"
+                            Width="240px">
+                        </asp:DropDownList>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div style="width: 210px; display: inline-block; line-height: 20px;">
+                            Room Plan</div>
+                        <div style="width: 60px; display: inline-block; line-height: 20px;">
+                            Rooms</div>
+                        <div>
+                            <asp:DropDownList ID="RoomPlanDropDownList" runat="server" AppendDataBoundItems="true"
+                                Width="200px">
+                            </asp:DropDownList>
+                            <asp:DropDownList ID="RoomNumberDropDownList" runat="server" Width="60px">
+                                <asp:ListItem Value="0" Text="0"></asp:ListItem>
+                                <asp:ListItem Value="1" Text="1"></asp:ListItem>
+                                <asp:ListItem Value="2" Text="2"></asp:ListItem>
+                                <asp:ListItem Value="3" Text="3"></asp:ListItem>
+                                <asp:ListItem Value="4" Text="4"></asp:ListItem>
+                                <asp:ListItem Value="5" Text="5"></asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                    </div>
+                    <div style="clear: both;">
+                    </div>
+                    <div id="RoomHeader">
+                    </div>
+                    <div id="RoomList">
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <label for="NoOfVehicleDropDownList">
+                            No Of Vehicle</label>
+                        <asp:DropDownList ID="NoOfVehicleDropDownList" runat="server" AppendDataBoundItems="true"
+                            Width="160px">
+                            <asp:ListItem Value="0" Text="0"></asp:ListItem>
+                            <asp:ListItem Value="1" Text="1"></asp:ListItem>
+                            <asp:ListItem Value="2" Text="2"></asp:ListItem>
+                            <asp:ListItem Value="3" Text="3"></asp:ListItem>
+                            <asp:ListItem Value="4" Text="4"></asp:ListItem>
+                            <asp:ListItem Value="5" Text="5"></asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                    <div style="clear: both;">
+                    </div>
+                    <div id="VehicleHeader">
+                    </div>
+                    <div id="VehicleList">
+                    </div>
+                    <div class="row" style="margin-bottom: 10px; float: right; margin-right: 35px;">
+                        <asp:Button ID="BacisPackageConfireButton" runat="server" Text=" Search " CssClass="FromBodyButton"
+                            ValidationGroup="ValidateData" OnClientClick="return ValidateBasicData();" 
+                            onclick="BacisPackageConfireButton_Click"  />
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset style="width: 290px; padding: 0px; display: inline-block; vertical-align: top;
+            background-color: #10728F; border-radius: 10px 10px 10px 10px; color: #FFFFFF;
+            margin-top: 20px; margin-left: 10px; font-weight: bold; border: 3px solid black;">
+            <div style="font-size: 16px; line-height: 30px; padding-bottom: 15px; text-align: center;">
+                Detail Package Configuration
+            </div>
+            <div id="Div1" style="display: inline-block; float: left; width: 290px;">
+                <div id="Div2" style="padding: 5px; float: left; width: 280px;">
+                    <div class="row" style="margin-bottom: 10px;">
+                        <label for="DetailArrivalDateTextBox">
+                            Arrival Date</label>
+                        <asp:TextBox ID="DetailArrivalDateTextBox" runat="server"></asp:TextBox>
+                        <ajaxToolkit:CalendarExtender ID="CalendarExtender2" runat="server" TargetControlID="DetailArrivalDateTextBox">
+                        </ajaxToolkit:CalendarExtender>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div style="width: 80px; display: inline-block; padding-left: 10px; line-height: 20px;">
+                            Adult</div>
+                        <div style="width: 80px; display: inline-block; padding-left: 10px; line-height: 20px;">
+                            Child
+                        </div>
+                        <div style="width: 80px; display: inline-block; padding-left: 10px; line-height: 20px;">
+                            Infant
+                        </div>
+                        <div style="clear: both;">
+                        </div>
+                       <%-- <asp:ListBox ID="DetailAdultNumberListBox" runat="server" Height="24px" Width="80px">
+                        </asp:ListBox>
+                        <asp:ListBox ID="DetailChildNumberListBox" runat="server" Height="24px" Width="80px">
+                        </asp:ListBox>
+                        <asp:ListBox ID="DetailInfantListBox" runat="server" Height="24px" Width="80px">
+                        </asp:ListBox>--%>
+                         <asp:DropDownList ID="NoOfAdultDropDownList2" runat="server" Height="24px" Width="80px">
+                             <asp:ListItem Selected="True" Value="0">Select</asp:ListItem>
+                        <asp:ListItem Text="1" Value="1"></asp:ListItem>
+                         <asp:ListItem Text="2" Value="2"></asp:ListItem>
+                          <asp:ListItem Text="3" Value="3"></asp:ListItem>
+                           <asp:ListItem Text="4" Value="4"></asp:ListItem>
+                            <asp:ListItem Text="5" Value="5"></asp:ListItem> 
+                            <asp:ListItem Text="6" Value="6"></asp:ListItem>
+                             <asp:ListItem Text="7" Value="7"></asp:ListItem>
+                              <asp:ListItem Text="8" Value="8"></asp:ListItem>
+                               <asp:ListItem Text="9" Value="9"></asp:ListItem>
+                                <asp:ListItem Text="10" Value="10"></asp:ListItem>
+                        </asp:DropDownList>
+                        <asp:DropDownList ID="NoOfChildDropDownList2" runat="server" Height="24px" Width="80px">
+                        <asp:ListItem Selected="True" Value="0">Select</asp:ListItem>
+                        <asp:ListItem Text="1" Value="1"></asp:ListItem>
+                         <asp:ListItem Text="2" Value="2"></asp:ListItem>
+                          <asp:ListItem Text="3" Value="3"></asp:ListItem>
+                           <asp:ListItem Text="4" Value="4"></asp:ListItem>
+                            <asp:ListItem Text="5" Value="5"></asp:ListItem> 
+                            <asp:ListItem Text="6" Value="6"></asp:ListItem>
+                             <asp:ListItem Text="7" Value="7"></asp:ListItem>
+                              <asp:ListItem Text="8" Value="8"></asp:ListItem>
+                               <asp:ListItem Text="9" Value="9"></asp:ListItem>
+                                <asp:ListItem Text="10" Value="10"></asp:ListItem>
+                        </asp:DropDownList>
+                        <asp:DropDownList ID="NoOfInfantDropDownList2" runat="server" Height="24px" Width="80px">
+                        <asp:ListItem Selected="True" Value="0">Select</asp:ListItem>
+                        <asp:ListItem Text="1" Value="1"></asp:ListItem>
+                         <asp:ListItem Text="2" Value="2"></asp:ListItem>
+                          <asp:ListItem Text="3" Value="3"></asp:ListItem>
+                           <asp:ListItem Text="4" Value="4"></asp:ListItem>
+                            <asp:ListItem Text="5" Value="5"></asp:ListItem> 
+                            <asp:ListItem Text="6" Value="6"></asp:ListItem>
+                             <asp:ListItem Text="7" Value="7"></asp:ListItem>
+                              <asp:ListItem Text="8" Value="8"></asp:ListItem>
+                               <asp:ListItem Text="9" Value="9"></asp:ListItem>
+                                <asp:ListItem Text="10" Value="10"></asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <asp:GridView ID="DestinationWiseAccomodationGridView" runat="server" 
+                            AutoGenerateColumns="false" BorderWidth="0px" GridLines="None" 
+                            CellPadding="0" CssClass="GridStyle">
+                            <Columns>
+                                <asp:TemplateField>                                   
+                                    <ItemTemplate>
+                                        <div style="display: none;">
+                                            <asp:Label ID="DestinationIDLabel" runat="server" Text='<%#Eval("DestinationID")%>'></asp:Label>
+                                        </div>
+                                        <div style="width:260px;" class="grayBackground">
+                                        <div style="display:block; width:240px;overflow:hidden;float:left;padding:10px 10px 5px 10px; border-radius:5px 5px 0px 0px;" class="grayBackground">
+                                        Day No: 
+                                        <asp:Label ID="DayNoLabel" runat="server" Text='<%#Eval("DayNo") %>' CssClass="dayno"></asp:Label>
+                                        </div>
+                                        <div style="display:block; width:240px;overflow:hidden;float:left; margin-top:0px;padding:10px 10px 5px 10px;" class="grayBackground">
+                                        Destination: 
+                                        <asp:Label ID="DestinationNameLabel" runat="server" Text='<%#Eval("DestinationName")%>'></asp:Label>
+                                        </div>
+                                        <div style="display:block; width:260px;overflow:hidden;float:left; margin-top:0px; text-align:center; padding-bottom:10px;border-radius:0px 0px 5px 5px;" class="grayBackground">                                        
+                                         <asp:DropDownList ID="DestAccomadationDropDownList" runat="server" AppendDataBoundItems="true"
+                                            Width="250px">
+                                            
+                                        </asp:DropDownList>
+                                        </div>
+                                        </div>
+                                    </ItemTemplate>
+                                </asp:TemplateField>
+                            </Columns>
+                        </asp:GridView>
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div style="width: 210px; display: inline-block; line-height: 20px;">
+                            Room Plan</div>
+                        <div style="width: 60px; display: inline-block; line-height: 20px;">
+                            Rooms</div>
+                        <div>
+                            <asp:DropDownList ID="DetailRoomPlanDropDownList" runat="server" AppendDataBoundItems="true" Width="200px">
+                            </asp:DropDownList>
+                            <asp:DropDownList ID="DetailRoomNumberDropDownList" runat="server" Width="60px">
+                                <asp:ListItem Value="0" Text="0"></asp:ListItem>
+                                <asp:ListItem Value="1" Text="1"></asp:ListItem>
+                                <asp:ListItem Value="2" Text="2"></asp:ListItem>
+                                <asp:ListItem Value="3" Text="3"></asp:ListItem>
+                                <asp:ListItem Value="4" Text="4"></asp:ListItem>
+                                <asp:ListItem Value="5" Text="5"></asp:ListItem>
+                            </asp:DropDownList>
+                        </div>
+                    </div>
+                    <div style="clear: both;">
+                    </div>
+                    <div id="DetailRoomHeader">
+                    </div>
+                    <div id="DetailRoomNumber">
+                    </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <label for="DetailVehicleCountDropDownList">
+                            No Of Vehicle</label>
+                        <asp:DropDownList ID="DetailVehicleCountDropDownList" runat="server" AppendDataBoundItems="true" Width="160px">
+                            <asp:ListItem Value="0" Text="0"></asp:ListItem>
+                            <asp:ListItem Value="1" Text="1"></asp:ListItem>
+                            <asp:ListItem Value="2" Text="2"></asp:ListItem>
+                            <asp:ListItem Value="3" Text="3"></asp:ListItem>
+                            <asp:ListItem Value="4" Text="4"></asp:ListItem>
+                            <asp:ListItem Value="5" Text="5"></asp:ListItem>
+                        </asp:DropDownList>
+                    </div>
+                    <div style="clear: both;">
+                    </div>
+                    <div id="DetailVehicleHeader">
+                    </div>
+                    <div id="DetailVehicleType">
+                    </div>
+                    <div class="row" style="margin-bottom: 10px; float: right; margin-right: 35px;">
+                        <asp:Button ID="ConfirePackageButton" runat="server" Text=" Search " CssClass="FromBodyButton"
+                            ValidationGroup="ValidateData" 
+                            OnClientClick="return ValidateDetailData();" 
+                            onclick="ConfirePackageButton_Click" />
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div style="background-color: White; display: inline-block; width: 620px; text-align: center;">
+        <div style="background-color: #3D4248; height: 40px; width: 100%; color: White; line-height: 36px;
+            font-size: 16px; font-weight: bold;">
+            <asp:Label ID="PackageNameLabel" runat="server"></asp:Label>
+        </div>
+        <div class="clear">
+        </div>
+        <div style="margin-top: 20px">
+            <div style="width: 5%; float: left; margin-top: 40px;">
+                <span><a href="#" id="gallery-prev">
+                    <img src="../Scripts/FancyBox/fancy_nav_left.png" alt="" /></a></span>
+            </div>
+            <div id="gallery-wrap" style="float: left; width: 90%;">
+                <ul id="gallery">
+                    <asp:Repeater ID="PhotoAlbumRepeater" runat="server" OnItemDataBound="PhotoAlbumRepeater_ItemDataBound">
+                        <HeaderTemplate>
+                        </HeaderTemplate>
+                        <ItemTemplate>
+                            <li><a title="<%#Eval("PhotoDesc") %>" class="fancybox" rel="group" href="<%# ResolveClientUrl("~/WebHandler/DisplayTpkPhotoGallery.ashx?IT=PN&ID=") + Eval("TpkPhotoID") %>">
+                                <img alt="" src="<%# ResolveClientUrl("~/WebHandler/DisplayTpkPhotoGallery.ashx?IT=PT&ID=") + Eval("TpkPhotoID") %>"
+                                    style="height: 80px; width: 95px;" />
+                            </a></li>
+                        </ItemTemplate>
+                        <FooterTemplate>
+                            <div style="width: 160px;">
+                                <asp:Label ID="EmptyDataLabel" runat="server" Text="No Photos Available Yet." Visible="false"
+                                    Font-Bold="true">
+                                </asp:Label>
+                            </div>
+                        </FooterTemplate>
+                    </asp:Repeater>
+                </ul>
+            </div>
+            <div style="width: 5%; float: left; margin-top: 40px;">
+                <span><a href="#" id="gallery-next">
+                    <img src="../Scripts/FancyBox/fancy_nav_right.png" alt="" /></a></span>
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+        <div style="margin-top: 20px;">
+            <asp:FormView ID="PackageDetailsFormView" runat="server" Width="100%">
+                <ItemTemplate>
+                    <table rules="rows" cellpadding="5px" cellspacing="0" class="formViewTableStyle">
+                        <tr>
+                            <td colspan="2" style="text-align: center; color: #FFFFFF; height: 30px; background-color: #5C5C5C;
+                                font-weight: bold; font-size: 11pt; font-family: Tahoma">
+                                Tour Package Details
+                            </td>
+                        </tr>
+                        <tr style="background-color: #F6F2F3; height: 30px;">
+                            <td class="fieldName" style="width: 60%; text-align: left;">
+                                <asp:Image ID="PckDescImage" runat="server" ImageUrl="~/Images/IconImage/pkgDesc.jpg" />
+                                <span style="line-height: 30px; vertical-align: bottom;">Package Description</span>
+                            </td>
+                            <td class="fieldValueLong">
+                                <%# Eval("TpkDesc")%>
+                            </td>
+                        </tr>
+                        <tr style="height: 30px;">
+                            <td class="fieldName" style="width: 60%; text-align: left;">
+                                <asp:Image ID="Image1" runat="server" ImageUrl="~/Images/IconImage/DestCovered.jpg" />
+                                <span style="line-height: 30px; vertical-align: bottom;">Destination Covered</span>
+                            </td>
+                            <td class="fieldValueLong">
+                                <%# Eval("TpkDestCovered")%>
+                            </td>
+                        </tr>
+                        <tr style="background-color: #F6F2F3; height: 30px;">
+                            <td class="fieldName" style="width: 60%; text-align: left;">
+                                <asp:Image ID="Image2" runat="server" ImageUrl="~/Images/IconImage/PickupPoint.jpg" />
+                                <span style="line-height: 30px; vertical-align: bottom;">PickUp Point</span>
+                            </td>
+                            <td class="fieldValueLong">
+                                <%# Eval("TpkPickUpPoint")%>
+                            </td>
+                        </tr>
+                        <tr style="height: 30px;">
+                            <td class="fieldName" style="width: 60%; text-align: left;">
+                                <asp:Image ID="Image3" runat="server" ImageUrl="~/Images/IconImage/DropPoint.jpg" />
+                                <span style="line-height: 30px; vertical-align: bottom;">TpkDropPoint</span>
+                            </td>
+                            <td class="fieldValueLong">
+                                <%# Eval("TpkDropPoint")%>
+                            </td>
+                        </tr>
+                    </table>
+                </ItemTemplate>
+                <HeaderStyle BackColor="#0066FF" Font-Bold="True" ForeColor="White" HorizontalAlign="Center" />
+            </asp:FormView>
+        </div>
+        <div class="clear">
+        </div>
+        <div style="margin-top: 20px;">
+            <div style="text-align: center; color: #FFFFFF; height: 30px; background-color: #5C5C5C;
+                font-weight: bold; font-size: 11pt; font-family: Tahoma; line-height: 30px;">
+                Day Wise Itinerary Details
+            </div>
+            <div>
+                <asp:GridView ID="ItineraryDetailsFGridView" runat="server" AutoGenerateColumns="false"
+                    ShowHeader="false" Width="100%">
+                    <Columns>
+                        <asp:TemplateField>
+                            <ItemTemplate>
+                                <div style="width: 100px; display: inline-block; vertical-align: top;">
+                                    Day
+                                    <asp:Label ID="DayLabel" runat="server" Text='<%#Eval("DayNo") %>'></asp:Label>
+                                </div>
+                                <div style="display: inline-block; vertical-align: top; width: 500px; text-align: left;">
+                                    Activity for Day:
+                                    <div style="clear: both;">
+                                    </div>
+                                    <asp:Label ID="ItinearyDetailLabel" runat="server" Text='<%#Eval("ItineraryDetail")%>'></asp:Label>
+                                    <div style="clear: both; height: 10px;">
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <div style="width: 250px; display: inline-block;">
+                                            Over Night Destination :<asp:Label ID="OverNightDestinationLabel" runat="server"
+                                                Text='<%#Eval("DestinationName") %>'></asp:Label>
+                                        </div>
+                                        <div style="width: 200px; display: inline-block; vertical-align: top;">
+                                            Accomadation Required????? :<asp:Label ID="AccomadationReqLabel" runat="server" Text='<%#Eval("OverNightAccRequired")%>'></asp:Label>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 5px;">
+                                        Note :
+                                        <asp:Label ID="NoteLabel" runat="server" Text='<%#Eval("OverNightDestNote") %>'></asp:Label>
+                                    </div>
+                                </div>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+
+
+                <asp:DropDownList ID="SelectTest" runat="server"></asp:DropDownList>
+            </div>
+        </div>
+        <div class="clear">
+        </div>
+    </div>    
+
+    <label>Your preferred programming language: </label>
+<select>
+  <option value="a">asp</option>
+  <option value="c">c</option>
+  <option value="cpp">c++</option>
+  <option value="cf">coldfusion</option>
+  <option value="g">groovy</option>
+  <option value="h">haskell</option>
+  <option value="j">java</option>
+  <option value="js">javascript</option>
+  <option value="p1">perl</option>
+  <option value="p2">php</option>
+  <option value="p3">python</option>
+  <option value="r">ruby</option>
+  <option value="s">scala</option>
+</select>
+    <div style="display: none">
+        <div id="PackageDetailPopUp">
+        Accomadation Cost
+        <asp:GridView ID="AccCostDetailGridView" runat="server" AutoGenerateColumns="false" GridLines="None">
+        <Columns>
+        <asp:BoundField DataField="RoomCost" HeaderText="Room Cost" />
+          <asp:BoundField DataField="ExtraBedCost" HeaderText="Extra Bed Cost" />
+            <asp:BoundField DataField="ExtraChildCost" HeaderText="ExtraChild" />
+        </Columns>
+        
+        </asp:GridView>
+
+        Other Cost Details 
+         <asp:GridView ID="OtherCostGridView" runat="server" AutoGenerateColumns="false">
+        <Columns>
+        <asp:BoundField DataField="DayNo" HeaderText="Day No" />
+        <asp:BoundField DataField="Amount" HeaderText="Amount" />
+        </Columns>
+        
+        </asp:GridView>
+      
+
+      Vehicle Cost Details
+         <asp:GridView ID="VehicleCostGridView" runat="server" AutoGenerateColumns="false">
+        <Columns>
+        <asp:BoundField DataField="VehicleName"  HeaderText="VehicleName"/>
+      <%--  <asp:BoundField DataField="VehicleCost" />--%>
+        <asp:BoundField DataField="VehicleCapacity" HeaderText="Max(Pax)" />
+        <asp:BoundField DataField="TotalGuestPerVehicle" HeaderText="Alocated Pax" />
+        <asp:BoundField DataField="Remarks"  HeaderText="Remarks"/>
+        </Columns>
+        
+        </asp:GridView>
+
+
+
+<p> Discount </p>
+
+ Discount for Other Cost 
+           <asp:GridView ID="OtherCostDiscountGridView" runat="server" AutoGenerateColumns="false">
+        <Columns>
+        <asp:BoundField DataField="TotalCost"  HeaderText="Total Cost"/>
+        <asp:BoundField DataField="Discount"  HeaderText="Discount"/>
+        <asp:BoundField DataField="AmountAfterDiscount" HeaderText="Amount After Discount" />
+        </Columns>
+        
+        </asp:GridView>
+
+        Discount for Vehicle Cost 
+           <asp:GridView ID="VehicleCostDiscountGridView" runat="server" AutoGenerateColumns="false">
+        <Columns>
+        <asp:BoundField DataField="TotalCost"   HeaderText="Total Cost"/>
+        <asp:BoundField DataField="Discount" HeaderText="Discount"/>
+        <asp:BoundField DataField="AmountAfterDiscount" HeaderText="Amount After Discount"  />
+        </Columns>
+        
+        </asp:GridView>
+
+        Discount for Accomadation 
+           <asp:GridView ID="AccCostDiscountGridView" runat="server" AutoGenerateColumns="false">
+        <Columns>
+        <asp:BoundField DataField="TotalCost"  HeaderText="Total Cost" />
+        <asp:BoundField DataField="Discount" HeaderText="Discount"/>
+        <asp:BoundField DataField="AmountAfterDiscount" HeaderText="Amount After Discount"  />
+        </Columns>
+        
+        </asp:GridView>
+        </div>
+    </div>
+
+    <div class="ui-widget">
+  <label>Your preferred programming language: </label>
+  <select id="combobox">
+    <option value="">Select one...</option>
+    <option value="ActionScript">ActionScript</option>
+    <option value="AppleScript">AppleScript</option>
+    <option value="Asp">Asp</option>
+    <option value="BASIC">BASIC</option>
+    <option value="C">C</option>
+    <option value="C++">C++</option>
+    <option value="Clojure">Clojure</option>
+    <option value="COBOL">COBOL</option>
+    <option value="ColdFusion">ColdFusion</option>
+    <option value="Erlang">Erlang</option>
+    <option value="Fortran">Fortran</option>
+    <option value="Groovy">Groovy</option>
+    <option value="Haskell">Haskell</option>
+    <option value="Java">Java</option>
+    <option value="JavaScript">JavaScript</option>
+    <option value="Lisp">Lisp</option>
+    <option value="Perl">Perl</option>
+    <option value="PHP">PHP</option>
+    <option value="Python">Python</option>
+    <option value="Ruby">Ruby</option>
+    <option value="Scala">Scala</option>
+    <option value="Scheme">Scheme</option>
+  </select>
+</div>
+
+
+    <a href="#PackageDetailPopUp" id="PackageDetail" >Click Here</a>
+    <asp:HiddenField ID="PaxListForVehicleHiddenField" runat="server" />
+    <asp:HiddenField ID="PaxListForVehicleHiddenField2" runat="server" />
+    <asp:HiddenField ID="SelectedRoomListAdultHiddenField" runat="server" />
+   
+    <asp:HiddenField ID="SelectedRoomListChildHiddenField" runat="server" /> 
+   
+    <asp:HiddenField ID="VehicleTypeListHiddenField" runat="server" />
+  
+    <asp:HiddenField ID="SelectedVehicleTypeHiddenField" runat="server" />
+   
+    <asp:HiddenField ID="SelectedDetailVehicleTypeHiddenField" runat="server" />
+    <asp:HiddenField ID="SelectAccomadationListHiddenField" runat="server" />
+     <asp:HiddenField ID="ResultTabOpenHiddenField" runat="server" />
+     <asp:HiddenField ID="DayCountHiddenField" runat="server" />
+</asp:Content>

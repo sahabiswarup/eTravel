@@ -1,0 +1,347 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using e_Travel.Class;
+using System.Web.Configuration;
+using System.Data;
+using System.Data.Common;
+using Sibin.Utilities.Imaging.TwoD;
+using Sibin.Utilities.Web.Messengers;
+using SIBINUtility.ValidatorClass;
+using e_TravelBLL.TourPackage;
+using System.IO;
+using Sibin.Utilities.Web.ExceptionHandling;
+using Sibin.FrameworkExtensions.DotNet.Web;
+using System.Data.SqlClient;
+using Newtonsoft.Json;
+
+namespace e_Travel.BusinessAdmin
+{
+    public partial class ConfigItineraryOtherCost : AdminBasePage
+    {
+        #region Private Variable
+        BusAdminConfigItineraryOtherCostBLL objBusAdminConfigItineraryOtherCostBLL;
+        BusAdmItineraryMstBLL objBusAdmItineraryMstBLL;       
+       
+        #endregion
+
+        #region Page Load
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            BindEvents();
+            if (!IsPostBack)
+            {
+                if (Session["BusinessID"] == null)
+                {
+                    Response.Redirect("~/PortalAdmin/RegisterBusiness.aspx");
+                }
+                else
+                {
+                    ItineraryOtherCostCustomGridView.AddGridViewColumns("Itinerary Detail|Cost Description|Cost Price|Selling Price", "ItineraryDetail|ItineraryCostDesc|ItineraryCostPrice|ItinerarySellPrice", "400|300|70|70", "ItineraryOtherCostID|ItineraryID|IsPerPax", true, true);
+                    ItineraryOtherCostCustomGridView.BindData();
+                    AutosuggestItinerary();
+                    InputEnableDisable(false);
+                    Clearall();
+                    
+                }
+            }
+        }
+
+        #endregion
+
+        #region Load Itinerary in Dropdown
+        //private void LoadAllItinerary()
+        //{
+        //    objBusAdmItineraryMstBLL = new BusAdmItineraryMstBLL();
+        //    try
+        //    {
+        //        ItineraryDropDownList.Items.Clear();
+        //        ItineraryDropDownList.Items.Add(new ListItem("--------------------Select Itinerary--------------------", "0"));
+        //        ItineraryDropDownList.DataTextField = "ItineraryDetail";
+        //        ItineraryDropDownList.DataValueField = "ItineraryID";
+        //        ItineraryDropDownList.DataSource = objBusAdmItineraryMstBLL.GetItinerary(Session["BusinessID"].ToString());
+        //        ItineraryDropDownList.DataBind();
+        //        ItineraryDropDownList.SelectedIndex = 0;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        WebMessenger.Show(this, "Unable To Load All Itinerary At This Moment", "Error", DialogTypes.Error);
+        //        return;
+        //    }
+        //    finally
+        //    {
+        //        objBusAdmItineraryMstBLL = null;
+        //    }
+
+        //}
+        #endregion
+
+        #region Button Click Events
+        protected void AddButton_Click(object sender, EventArgs e)
+        {
+            Session["OperationType"] = "ADD";
+            InputEnableDisable(true);
+            Clearall();
+        }
+
+        protected void EditButton_Click(object sender, EventArgs e)
+        {
+            if (ItineraryOtherCostCustomGridView.SelectedDataKey == null)
+            {
+                WebMessenger.Show(this, "Select A Record From List First", "Information", DialogTypes.Information);
+                return;
+            }
+            else
+            {
+                Session["OperationType"] = "UPDATE";
+                InputEnableDisable(true);
+               
+            }
+
+        }
+
+        protected void SaveButton_Click(object sender, EventArgs e)
+        {
+            objBusAdminConfigItineraryOtherCostBLL = new BusAdminConfigItineraryOtherCostBLL();
+            try
+            {
+                if (ItinearyDetailTextBox.Text.Trim() == "")
+                {
+                    WebMessenger.Show(this, "Please Select A Itineray First", "Required", DialogTypes.Information);
+                    return;
+                }
+                if(ItineraryCostDescTextBox.Text.Trim()=="")
+                {
+                    WebMessenger.Show(this, "Please Type Cost Description", "Required", DialogTypes.Information);
+                    return;
+                }                
+
+                if (ItineraryCostPriceTextBox.Text.Trim() == "")
+                {
+                    WebMessenger.Show(this, "Please Type Cost Price", "Required", DialogTypes.Information);
+                    return;
+                }
+                else if (ItineraryCostPriceTextBox.Text.Trim() != "")
+                {
+                    if (ValidatorClass.IsNumeric(ItineraryCostPriceTextBox.Text.Trim()) == false)
+                    {
+                        WebMessenger.Show(this, "Please Type Valid Cost Price", "Invalid", DialogTypes.Information);
+                        return;
+                    }
+                }
+                if (ItinerarySellPriceTextBox.Text.Trim() == "")
+                {
+                    WebMessenger.Show(this, "Please Type Selling Price", "Required", DialogTypes.Information);
+                    return;
+                }
+                else if (ItinerarySellPriceTextBox.Text.Trim()!= "")
+                {
+                    if (ValidatorClass.IsNumeric(ItinerarySellPriceTextBox.Text.Trim()) == false)
+                    {
+                        WebMessenger.Show(this, "Please Type Valid Selling Price", "Invalid", DialogTypes.Information);
+                        return;
+                    }
+                }
+                if (SelectedItineraryHiddenField.Value=="")
+                {
+                    WebMessenger.Show(this, "Please Select Itinerary", "Required", DialogTypes.Information);
+                    return;
+                }
+                if (PaxTypeDropDownList.SelectedIndex <= 0)
+                {
+                    WebMessenger.Show(this, "Please Select Pax Type", "Required", DialogTypes.Information);
+                    return;
+                }
+                if (Session["OperationType"] != null)
+                {
+
+                    if (Session["OperationType"].ToString() == "ADD")
+                    {
+                        objBusAdminConfigItineraryOtherCostBLL.AddItineraryOtherCost(Session["BusinessID"].ToString(), SelectedItineraryHiddenField.Value,
+                            Decimal.Parse(ItineraryCostPriceTextBox.Text.Trim().ToString()), Decimal.Parse(ItinerarySellPriceTextBox.Text.Trim().ToString()),
+                            ItineraryCostDescTextBox.Text.Trim(), bool.Parse(PaxTypeDropDownList.SelectedValue.ToString()), Page.User.Identity.Name);
+                        WebMessenger.Show(this, "Record Saved Successfully", "Success", DialogTypes.Success);
+                        ItineraryOtherCostCustomGridView.BindData();
+                    }
+                    else if (Session["OperationType"].ToString() == "UPDATE")
+                    {
+                        objBusAdminConfigItineraryOtherCostBLL.UpdateItineraryOtherCost(Session["BusinessID"].ToString(), ItineraryOtherCostCustomGridView.SelectedDataKey.Values["ItineraryOtherCostID"].ToString(),
+                         SelectedItineraryHiddenField.Value, Decimal.Parse(ItineraryCostPriceTextBox.Text.Trim().ToString()), Decimal.Parse(ItinerarySellPriceTextBox.Text.Trim().ToString()),
+                        ItineraryCostDescTextBox.Text.Trim(), bool.Parse(PaxTypeDropDownList.SelectedValue.ToString()), Page.User.Identity.Name);
+                        WebMessenger.Show(this, "Record Updated Successfully", "Success", DialogTypes.Success);
+                        ItineraryOtherCostCustomGridView.BindData();
+                    }
+                    Session["OperationType"] = null;
+                    Clearall();
+                    InputEnableDisable(false);
+                }
+                else
+                {
+                    WebMessenger.Show(this, "Select A Operation First", "Information", DialogTypes.Information);
+                    return;
+                }
+                   
+                    
+            }
+            catch (Exception)
+            {
+                WebMessenger.Show(this, "Server Error", "Error", DialogTypes.Error);
+                return;
+            }
+            finally
+            {
+                objBusAdminConfigItineraryOtherCostBLL = null;
+            }
+        }
+
+        protected void ClearButton_Click(object sender, EventArgs e)
+        {
+            Session["OperationType"] = null;
+            Clearall();
+            InputEnableDisable(false);
+           
+        }
+
+        #endregion
+
+        #region Gridview Events and Load GridView
+
+        private void BindEvents()
+        {
+            ItineraryOtherCostCustomGridView.ucGridView_SelectedIndexChanging += new GridViewSelectEventHandler(BusinessCustomGridView_SelectedIndexChanging);
+            ItineraryOtherCostCustomGridView.ucGridView_RowDeleting += new GridViewDeleteEventHandler(BusinessCustomGridView_RowDeleting);
+            ItineraryOtherCostCustomGridView.DataSource += new SIBINUtility.UserControl.GridView.ucGridView.GridViewDataSource(LoadGridView);
+        }
+
+        protected void BusinessCustomGridView_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
+        {
+            objBusAdminConfigItineraryOtherCostBLL = new BusAdminConfigItineraryOtherCostBLL();
+            try
+            {
+                Session["OperationType"] = null;
+                string isPerPax = "";
+                ItinearyDetailTextBox.Text = HttpUtility.HtmlDecode(ItineraryOtherCostCustomGridView.Rows[e.NewSelectedIndex].Cells[1].Text);
+                ItineraryCostDescTextBox.Text = HttpUtility.HtmlDecode(ItineraryOtherCostCustomGridView.Rows[e.NewSelectedIndex].Cells[2].Text);
+                ItineraryCostPriceTextBox.Text = HttpUtility.HtmlDecode(ItineraryOtherCostCustomGridView.Rows[e.NewSelectedIndex].Cells[3].Text);
+                ItinerarySellPriceTextBox.Text = HttpUtility.HtmlDecode(ItineraryOtherCostCustomGridView.Rows[e.NewSelectedIndex].Cells[4].Text);
+                SelectedItineraryHiddenField.Value = ItineraryOtherCostCustomGridView.DataKeys[e.NewSelectedIndex].Values["ItineraryID"].ToString();
+                ViewState["ItineraryID"] = ItineraryOtherCostCustomGridView.DataKeys[e.NewSelectedIndex].Values["ItineraryID"].ToString();
+                isPerPax = HttpUtility.HtmlDecode(ItineraryOtherCostCustomGridView.DataKeys[e.NewSelectedIndex].Values["IsPerPax"].ToString());
+                if (isPerPax == "YES")
+                {
+                    PaxTypeDropDownList.SelectedValue = "TRUE";
+                }
+                else if (isPerPax == "NO")
+                {
+                    PaxTypeDropDownList.SelectedValue = "FALSE";
+                }
+               
+                InputEnableDisable(false);
+            }
+            catch (Exception ex)
+            {
+                UserInterfaceExceptionHandler.HandleException(ref ex);
+                WebMessenger.Show(this, "Error Occured", "Error", DialogTypes.Error);
+            }
+            finally
+            {
+                objBusAdminConfigItineraryOtherCostBLL = null;
+            }
+        }
+
+        protected void BusinessCustomGridView_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        {
+            objBusAdminConfigItineraryOtherCostBLL = new BusAdminConfigItineraryOtherCostBLL();
+            try
+            {
+                objBusAdminConfigItineraryOtherCostBLL.DeleteItineraryOtherCost(ItineraryOtherCostCustomGridView.DataKeys[e.RowIndex].Values["ItineraryOtherCostID"].ToString(), Page.User.Identity.Name);
+                WebMessenger.Show(this.Page, "Record Deleted Successfully", "Deleted", DialogTypes.Success);
+                ItineraryOtherCostCustomGridView.BindData();
+
+            }
+            catch (Exception ex)
+            {
+                UserInterfaceExceptionHandler.HandleException(ref ex);
+                Session["OperationType"] = null;
+                BRMessengers.BRDeleteFailure(this.Page);
+            }
+            finally
+            {
+                objBusAdminConfigItineraryOtherCostBLL = null;
+            }
+        }
+
+        private DataTable LoadGridView()
+        {
+            objBusAdminConfigItineraryOtherCostBLL = new BusAdminConfigItineraryOtherCostBLL();
+            DataTable dt = new DataTable();
+            try
+            {
+                int startRowIndex = (ItineraryOtherCostCustomGridView.PageIndex * ItineraryOtherCostCustomGridView.PageSize) + 1;
+                dt = objBusAdminConfigItineraryOtherCostBLL.GetItineraryOtherCostDetails(Session["BusinessID"].ToString(), startRowIndex, ItineraryOtherCostCustomGridView.PageSize);
+                if (dt.Rows.Count > 0)
+                {
+                    ItineraryOtherCostCustomGridView.TotalRecordCount = int.Parse(dt.Rows[0]["TotalRows"].ToString());
+                }
+            }
+            catch (Exception)
+            {
+                BRMessengers.BRError(this.Page, "Server Error...");
+            }
+            finally
+            {
+                objBusAdminConfigItineraryOtherCostBLL = null;
+            }
+            return dt;
+        }
+        #endregion
+
+        #region Page Function
+        private void InputEnableDisable(bool isEnabled)
+        {
+            ItinearyDetailTextBox.Enabled = isEnabled;
+            ItineraryCostPriceTextBox.Enabled = isEnabled;
+            ItinerarySellPriceTextBox.Enabled = isEnabled;
+            ItineraryCostDescTextBox.Enabled = isEnabled;
+            PaxTypeDropDownList.Enabled = isEnabled;
+        }
+        private void Clearall()
+        {
+            ItinearyDetailTextBox.Text = "";
+            SelectedItineraryHiddenField.Value = "";
+            ItineraryCostPriceTextBox.Text = "";
+            ItinerarySellPriceTextBox.Text = "";
+            ItineraryCostDescTextBox.Text = "";
+            PaxTypeDropDownList.SelectedValue = "0";
+        }
+        public void AutosuggestItinerary()
+        {
+            objBusAdmItineraryMstBLL = new BusAdmItineraryMstBLL();
+            try
+            {
+              //  SqlConnection con = new SqlConnection(System.Configuration.ConfigurationManager.ConnectionStrings["eTravelCon"].ToString());
+               // SqlDataAdapter da = new SqlDataAdapter();
+               // SqlCommand cmd = new SqlCommand("select ItineraryID as value, ItineraryDetail as label from utblMstItinerary WHERE IsDeleted=0 And BusinessID=" + "'" + Session["BusinessID"].ToString() + "'", con);
+               // da.SelectCommand = cmd;
+                DataSet ds = new DataSet();
+                DataTable dt = new DataTable();
+                dt = objBusAdmItineraryMstBLL.GetItinerary(Session["BusinessID"].ToString());
+                //con.Open();
+                //cmd.CommandType = CommandType.Text;
+               // da.Fill(ds);
+                string json = Server.HtmlDecode(JsonConvert.SerializeObject(dt));
+                ItineraryListHiddenField.Value = json;
+            }
+            catch (Exception ex)
+            {
+                WebMessenger.Show(this, "Unable To Load Itineary Details at this Moment", "Error", DialogTypes.Information);
+                return;
+            }
+        }
+        #endregion
+    }
+}

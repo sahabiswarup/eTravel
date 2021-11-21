@@ -1,0 +1,173 @@
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage/BusinessAdmin.Master"
+    AutoEventWireup="true" CodeBehind="DestinationDtlMaster.aspx.cs" Inherits="e_Travel.BusinessAdmin.DestinationDtlMaster" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <script src="../Scripts/jQuery/ajaxfileupload.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function ajaxFileUpload() {
+            $("#FileLoading")
+            .ajaxStart(function () {
+                $(this).show();
+            })
+        .ajaxComplete(function () {
+            $(this).hide();
+        });
+            $.ajaxFileUpload
+        ({
+            url: '<%=ResolveClientUrl("~/WebHandler/AjaxFileUploader.ashx")%>',
+            secureuri: false,
+            fileElementId: 'photographToUpload',
+            dataType: 'json',
+            data: { name: 'logan', id: 'id' },
+            success: function (data, status) {
+                if (typeof (data.error) != 'undefined') {
+                    if (data.error != '') {
+                        alert(data.error);
+                    } else {
+
+                        $('[id$=cropImageTarget]').attr('src', '<%= ResolveClientUrl("~/WebHandler/DisplayUploadedImage.ashx?T=")%>' + (new Date()).getTime());
+                        $('.jcrop-holder img').attr('src', '<%= ResolveClientUrl("~/WebHandler/DisplayUploadedImage.ashx?T=")%>' + (new Date()).getTime());
+                        $('[id$=cropImageTarget]').Jcrop({
+                            onChange: setCoords,
+                            onSelect: setCoords,
+                            onRelease: clearCoords,
+                            setSelect: [32, 24, $('[id$=cropImageTarget]').width() - 40, ($('[id$=cropImageTarget]').width() * (3 / 4)) - 30],
+                            aspectRatio: 10 / 8
+                        });
+                    }
+                }
+            },
+            error: function (data, status, e) {
+                alert(e);
+            }
+        }
+    )
+            return false;
+        }
+
+        function validatePhotographToUpload() {
+            var uploadcontrol = document.getElementById('photographToUpload').value;
+            uploadcontrol = uploadcontrol.substring(uploadcontrol.lastIndexOf('\\') + 1);
+            //alert(uploadcontrol.lastIndexOf('\\'));
+            //Regular Expression for fileupload control.
+            var reg = /^[a-zA-Z0-9-_ \.]+\.(pjpg|PJPG|jpg|JPG|jpeg|JPEG|gif|GIF|png|PNG)$/;
+            if (uploadcontrol.length > 0) {
+                //Checks with the control value.
+                if (reg.test(uploadcontrol)) {
+                    // Call Upload Handler
+                    ajaxFileUpload();
+                }
+                else {
+                    //If the condition not satisfied shows error message.
+                    alert("Only .jpg or .JPG, .pjpg or .PJPG, .jpeg or .JPEG, .gif or .GIF and .png or .PNG files are allowed!");
+                    return false;
+                }
+            }
+        } //End of function validate.
+
+        function loadImage() {
+            $('[id$=cropImageTarget]').attr('src', '<%= ResolveClientUrl("~/WebHandler/DisplayUploadedImage.ashx?T=")%>' + (new Date()).getTime());
+            $('.jcrop-holder img').attr('src', '<%= ResolveClientUrl("~/WebHandler/DisplayUploadedImage.ashx?T=")%>' + (new Date()).getTime());
+            $('[id$=cropImageTarget]').Jcrop({
+                onChange: setCoords,
+                onSelect: setCoords,
+                onRelease: clearCoords,
+                setSelect: [32, 24, $('[id$=cropImageTarget]').width() - 40, ($('[id$=cropImageTarget]').width() * (3 / 4)) - 30],
+                aspectRatio: 10 / 8
+            });
+        }
+        function CropButton_onclick() {
+            $.ajax({
+                type: "POST",
+                url: '<%= ResolveClientUrl("~/WebHandler/CropImage.ashx?X1=")%>' + $('[id$=cropImageX1]').val() + "&Y1=" + $('[id$=cropImageY1]').val() + "&X2=" + $('[id$=cropImageW]').val() + "&Y2=" + $('[id$=cropImageH]').val(),
+                dataType: 'json',
+                contentType: "application/json; charset=utf-8",
+                success: function () {
+                    $('[id$=cropImageTarget]').attr('src', '<%= ResolveClientUrl("~/WebHandler/DisplayUploadedImage.ashx?T=")%>' + (new Date()).getTime());
+                    $('.jcrop-holder img').attr('src', '<%= ResolveClientUrl("~/WebHandler/DisplayUploadedImage.ashx?T=")%>' + (new Date()).getTime());
+                    $('[id$=cropImageTarget]').Jcrop({
+                        onChange: setCoords,
+                        onSelect: setCoords,
+                        onRelease: clearCoords
+                    });
+                }
+            });
+        }
+    </script>
+    <style type="text/css">
+        .minrow
+        {
+            width: 450px;
+        }
+    </style>
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <div class="FromBody">
+        <asp:UpdatePanel runat="server" ID="UpdatePanel1">
+            <ContentTemplate>
+                <div class="BoxHeader">
+                    <asp:Label ID="BusinessNameLabel" runat="server" Text=""></asp:Label></div>
+                <div class="BoxBody">
+                    <div class="BoxContent">
+                        <fieldset>
+                            <legend>Destination Information</legend>
+                            <div class="row">
+                                <label for="TaglineTextBox">
+                                    TagLine
+                                </label>
+                                <asp:TextBox ID="TaglineTextBox" runat="server" ValidationGroup="ValidateData" MaxLength="512"
+                                    Width="305px" Enabled="false"></asp:TextBox>
+                            </div>
+                            <div class="row">
+                                <label for="HirarchyTextBox">
+                                    Hirarchy</label>
+                                <asp:TextBox ID="HirarchyTextBox" runat="server" ValidationGroup="ValidateData" Width="305px"
+                                    Enabled="false"  ></asp:TextBox>
+                            </div>
+                            <div class="row">
+                                <label for="DescTextBox">
+                                    Description</label>
+                                <asp:TextBox ID="DescTextBox" runat="server" ValidationGroup="ValidateData" TextMode="MultiLine"
+                                    Width="305px" Enabled="false"></asp:TextBox>
+                            </div>
+                            <div class="row">
+                                <input id="photographToUpload" type="file" name="photographToUpload" onchange="return validatePhotographToUpload()"
+                                    style="overflow: hidden; width: 92%" />
+                                <img id="FileLoading" alt="Loading..." src="<%=ResolveClientUrl("~/images/loading.gif")%>"
+                                    style="display: none;" />
+                                <div id="uploadedImageDisplay">
+                                    <img id="cropImageTarget" alt="Please browse the image" name="cropImageTarget" src="<%= ResolveClientUrl("~/WebHandler/DisplayUploadedImage.ashx")%>"
+                                        style="border-style: solid; border-width: 2px; border-color: Gray; margin-top: 10px;" />
+                                    <input id="CropButton" type="button" value="Crop Selected Area" onclick="return CropButton_onclick()" />
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="FromBodyButtonContainer">
+                                <asp:Button ID="AddButton" runat="server" Text=" Add " CssClass="FromBodyButton"
+                                    Width="80px" onclick="AddButton_Click" />
+                                <asp:Button ID="EditButton" runat="server" Text=" Edit " CssClass="FromBodyButton"
+                                    Width="80px" onclick="EditButton_Click" />
+                                <asp:Button ID="SaveButton" runat="server" Text="Save" CssClass="FromBodyButton"
+                                    ValidationGroup="ValidateData" Width="80px" onclick="SaveButton_Click" />
+                                <asp:Button ID="ClearButton" runat="server" Text=" Clear " CssClass="FromBodyButton"
+                                    Width="80px" onclick="ClearButton_Click" />
+                            </div>
+                        </fieldset>
+                 
+                <asp:HiddenField ID="cropImageX1" runat="server" />
+                <asp:HiddenField ID="cropImageY1" runat="server" />
+                <asp:HiddenField ID="cropImageW" runat="server" />
+                <asp:HiddenField ID="cropImageH" runat="server" />
+            </ContentTemplate>
+            <Triggers>
+            <asp:AsyncPostBackTrigger ControlID="HirarchyTextBox" EventName="textchanged" />
+            </Triggers>
+        </asp:UpdatePanel>
+        <fieldset>
+            <gridUC:CustomGridView ID="DestinationDtlCustomGridView" runat="server" Width="100%" />
+        </fieldset>
+           </div>
+                </div>
+    </div>
+</asp:Content>

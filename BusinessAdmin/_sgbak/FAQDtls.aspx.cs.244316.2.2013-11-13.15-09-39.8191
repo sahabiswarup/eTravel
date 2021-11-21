@@ -1,0 +1,289 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+
+using Sibin.Utilities.Web.ExceptionHandling;
+using SIBINUtility.ValidatorClass;
+
+using e_Travel.Class;
+using e_TravelBLL.CMS;
+
+namespace e_Travel.BusinessAdmin
+{
+    public partial class FAQDtls : AdminBasePage
+    {
+        BusAdmFAQDtlsBLL objBusAdmFAQDtlsBLL;
+        PtlAdmFAQCategoryBLL objPtlAdmFAQCategoryBLL;
+        
+        #region Gridview Events and Load GridView
+        private void BindEvents()
+        {
+            FAQCustomGridView.ucGridView_SelectedIndexChanging += new GridViewSelectEventHandler(FAQCustomGridView_SelectedIndexChanging);
+            FAQCustomGridView.ucGridView_RowDeleting += new GridViewDeleteEventHandler(FAQCustomGridView_RowDeleting);
+            FAQCustomGridView.DataSource += new SIBINUtility.UserControl.GridView.ucGridView.GridViewDataSource(LoadGridView);
+        }
+
+        protected void FAQCustomGridView_SelectedIndexChanging(object sender, GridViewSelectEventArgs e)
+        {
+            Session["OpernType"] = null;
+            DisableInputControls();
+            AnswerTextBox.Text = HttpUtility.HtmlDecode(FAQCustomGridView.DataKeys[e.NewSelectedIndex].Values["AnswerDesc"].ToString());
+            QuestionTextBox.Text = HttpUtility.HtmlDecode(FAQCustomGridView.Rows[e.NewSelectedIndex].Cells[2].Text);
+            CategoryDropDownList.SelectedValue = HttpUtility.HtmlDecode(FAQCustomGridView.DataKeys[e.NewSelectedIndex].Values["CategoryID"].ToString());
+        }
+
+        protected void FAQCustomGridView_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        {
+            objBusAdmFAQDtlsBLL = new BusAdmFAQDtlsBLL();
+            try
+            {
+                objBusAdmFAQDtlsBLL.DeleteFAQDtls(FAQCustomGridView.DataKeys[e.RowIndex].Values["QuestionID"].ToString());
+                WebMessenger.Show(this.Page, "Record Deleted Successfully", "Deleted", DialogTypes.Success);
+                FAQCustomGridView.BindData();
+            }
+            catch (Exception ex)
+            {
+                UserInterfaceExceptionHandler.HandleException(ref ex);
+                Session["OpernType"] = null;
+                WebMessenger.Show(this, "Unable To Delete Destination At This Moment", "Error", DialogTypes.Error);
+            }
+            finally
+            {
+                ClearInputControls();
+                DisableInputControls();
+                objBusAdmFAQDtlsBLL = null;
+            }
+        }
+
+        private DataTable LoadGridView()
+        {
+            objBusAdmFAQDtlsBLL = new BusAdmFAQDtlsBLL();
+            DataTable dtRec = new DataTable();
+            try
+            {
+                int startRowIndex = (FAQCustomGridView.PageIndex * FAQCustomGridView.PageSize) + 1;
+                dtRec = objBusAdmFAQDtlsBLL.GetAllFAQDtlsPaged(Session["BusinessID"].ToString(),startRowIndex, FAQCustomGridView.PageSize);
+                if (dtRec.Rows.Count > 0)
+                {
+                    FAQCustomGridView.TotalRecordCount = int.Parse(dtRec.Rows[0]["TotalRows"].ToString());
+                }
+            }
+            catch (Exception)
+            {
+                WebMessenger.Show(this, "Unable To Load Question List At This Moment", "Error", DialogTypes.Error);
+            }
+            finally
+            {
+                objBusAdmFAQDtlsBLL = null;
+            }
+            return dtRec;
+        }
+        #endregion
+
+        #region Page Load
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            checkBusinessID();
+            BindEvents();
+            if (!IsPostBack)
+            {
+                FAQCustomGridView.AddGridViewColumns("Category Name |Question", "CategoryName|QuestionDesc", "200|350", "CategoryID|QuestionID|AnswerDesc", true, true);
+                FAQCustomGridView.BindData();
+                LoadAllCategory();
+                DisableInputControls();
+                ClearInputControls();
+            }
+        }
+        #endregion
+
+        #region Button Click Events
+        protected void AddButton_Click(object sender, EventArgs e)
+        {
+            EnableInputControls();
+            ClearInputControls();
+            CategoryDropDownList.Focus();
+            this.Session["OpernType"] = "Add";
+        }
+
+        protected void EditButton_Click(object sender, EventArgs e)
+        {
+            if (FAQCustomGridView.SelectedDataKey == null)
+            {
+                WebMessenger.Show(this, "Select A Record From List First", "Information", DialogTypes.Information);
+                return;
+            }
+            else
+            {
+                EnableInputControls();
+                CategoryDropDownList.Focus();
+                this.Session["OpernType"] = "Edit";
+            }
+        }
+
+        protected void SaveButton_Click(object sender, EventArgs e)
+        {
+            objBusAdmFAQDtlsBLL = new BusAdmFAQDtlsBLL();
+            //Validation
+            if (CategoryDropDownList.SelectedValue == "0")
+            {
+                WebMessenger.Show(this, "Select A FAQ Category", "Information", DialogTypes.Information);
+                CategoryDropDownList.Focus();
+                return;
+            }
+            if (QuestionTextBox.Text.Trim() == "")
+            {
+                WebMessenger.Show(this, "Question Is Required", "Information", DialogTypes.Information);
+                return;
+            }
+            
+            if (AnswerTextBox.Text.Trim() == "")
+            {
+                WebMessenger.Show(this, "Answer Is Required", "Information", DialogTypes.Information);
+                return;
+            }
+           
+            
+
+            try
+            {
+                if (Page.IsValid)
+                {
+                    if (Session["OpernType"] != null)
+                    {
+                        if (Session["OpernType"].ToString() == "Add")
+                        {
+                            objBusAdmFAQDtlsBLL.AddFAQDtls(Session["BusinessID"].ToString(),Int64.Parse(CategoryDropDownList.SelectedValue.ToString()), QuestionTextBox.Text.Trim(),AnswerTextBox.Text.Trim(), Page.User.Identity.Name);
+                            FAQCustomGridView.BindData();
+                            ClearInputControls();
+                            DisableInputControls();
+                            Session["OpernType"] = null;
+                            WebMessenger.Show(this, "FAQ Added Sucessfully", "Success", DialogTypes.Success);
+                        }
+                        else if (Session["OpernType"].ToString() == "Edit")
+                        {
+                            objBusAdmFAQDtlsBLL.EditFAQDtls(FAQCustomGridView.SelectedDataKey.Values["QuestionID"].ToString(),Int64.Parse(CategoryDropDownList.SelectedValue.ToString()), QuestionTextBox.Text.Trim(),AnswerTextBox.Text.Trim(), Page.User.Identity.Name);
+                            FAQCustomGridView.BindData();
+                            ClearInputControls();
+                            DisableInputControls();
+                            Session["OpernType"] = null;
+                            WebMessenger.Show(this, "FAQ Updated Sucessfully", "Success", DialogTypes.Success);
+                        }
+                        else
+                        {
+                            WebMessenger.Show(this, "Invalid Operation", "Operation", DialogTypes.Information);
+                            ClearInputControls();
+                            DisableInputControls();
+                            Session["OpernType"] = null;
+                        }
+                    }
+
+                    else
+                    {
+                        WebMessenger.Show(this, "Select A Opeartion First", "Information", DialogTypes.Information);
+                        return;
+                    }
+                }
+                else
+                {
+                    WebMessenger.Show(this, "Invalid Operation", "Operation", DialogTypes.Information);
+                    ClearInputControls();
+                    DisableInputControls();
+                    Session["OpernType"] = null;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                UserInterfaceExceptionHandler.HandleException(ref ex);
+                Session["OpernType"] = null;
+                WebMessenger.Show(this, ex.Message, "Error", DialogTypes.Error);
+            }
+            finally
+            {
+                objBusAdmFAQDtlsBLL = null;
+            }
+        }
+
+        protected void ClearButton_Click(object sender, EventArgs e)
+        {
+            ClearInputControls();
+            DisableInputControls();
+            this.Session["OpernType"] = null;
+        }
+        #endregion
+
+        #region Enable/Disable/Clear Form Elements
+        private void EnableInputControls()
+        {
+            QuestionTextBox.Enabled = true;
+            AnswerTextBox.Enabled = true;
+            CategoryDropDownList.Enabled = true;
+        }
+
+        private void DisableInputControls()
+        {
+            QuestionTextBox.Enabled = false;
+            AnswerTextBox.Enabled = false;
+            CategoryDropDownList.Enabled = false;
+        }
+
+        private void ClearInputControls()
+        {
+            QuestionTextBox.Text = "";
+            AnswerTextBox.Text = "";
+            CategoryDropDownList.SelectedValue = "0";
+        }
+        #endregion
+
+        private void LoadAllCategory()
+        {
+            objPtlAdmFAQCategoryBLL = new PtlAdmFAQCategoryBLL();
+            try
+            {
+                CategoryDropDownList.Items.Clear();
+                CategoryDropDownList.Items.Add(new ListItem("--- Select ---", "0"));
+                CategoryDropDownList.DataTextField = "CategoryName";
+                CategoryDropDownList.DataValueField = "CategoryID";
+                CategoryDropDownList.DataSource = objPtlAdmFAQCategoryBLL.GetFAQCategory(); ;
+                CategoryDropDownList.DataBind();
+                CategoryDropDownList.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                WebMessenger.Show(this, "Unable To Load All Category At This Moment", "Error", DialogTypes.Error);
+                return;
+            }
+            finally
+            {
+                objPtlAdmFAQCategoryBLL = null;
+            }
+
+        }
+        protected void checkBusinessID()
+        {
+            if (Session["BusinessID"] == null)
+            {
+                if (Request.Cookies["BusinessID"] != null)
+                {
+                    Session["BusinessID"] = Request.Cookies["BusinessID"].Value.ToString();
+                }
+                else
+                {
+                    if (Page.User.Identity.Name != "")
+                    {
+                        if (User.IsInRole("BusinessAdmin"))
+                        {
+                            Session["BusinessID"] = HttpContext.Current.Profile.GetPropertyValue("BusinessID").ToString();
+                        }
+                    }
+                }
+                Response.Redirect("~/PortalAdmin/RegisterBusiness.aspx");
+            }
+        }
+    }
+}

@@ -1,0 +1,54 @@
+﻿<?xml version="1.0"?>
+<configuration>
+
+  <location path="Register.aspx">
+    <system.web>
+      <authorization>
+        <allow users="*"/>
+      </authorization>
+    </system.web>
+  </location>
+
+  
+  <location path="CreateUser.aspx">
+    <system.web>
+      <authorization>
+        <allow roles="SuperAdmin,DistrictAdmin,SchoolSysAdmin"/>
+        <deny users="*"/>
+      </authorization>
+    </system.web>
+  </location>
+  <location path="ManageUser.aspx">
+    <system.web>
+      <authorization>
+        <allow roles="SuperAdmin,DistrictAdmin,SchoolSysAdmin"/>
+        <deny users="*"/>
+      </authorization>
+    </system.web>
+  </location>
+  <location path="CreateRole.aspx">
+    <system.web>
+      <authorization>
+
+        <allow roles="SuperAdmin"/>
+        <deny users="*"/>
+
+      </authorization>
+    </system.web>
+  </location>
+
+  <location path="ChangePassword.aspx">
+    <system.web>
+      <authorization>
+        <deny users="?"/>
+      </authorization>
+    </system.web>
+  </location>
+
+  <system.web>
+    <authorization>
+      <allow roles="SuperAdmin,DistrictAdmin,SchoolSysAdmin"/>
+      <deny users="?"/>
+    </authorization>
+  </system.web>
+</configuration>

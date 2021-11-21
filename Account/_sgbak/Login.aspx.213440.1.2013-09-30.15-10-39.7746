@@ -1,0 +1,60 @@
+﻿<%@ Page Title="Log In" Language="C#" AutoEventWireup="true" 
+    CodeBehind="Login.aspx.cs" Inherits="SchoolWebSite.Account.Login" Theme = "Default" %>
+    <%@ Register src="../UserControls/Account/ucEncryptedLogin.ascx" tagname="ucEncryptedLogin" tagprefix="uc1" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="Head1" runat="server">
+
+    <title></title>
+    <link href="../Styles/GeneralSectionLayout.css" rel="Stylesheet" type="text/css" />
+    
+
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div id="headerSection">
+            <div id = "bannerSection">
+                <div class = "contentWrapper">
+                    <div class ="contentWrapper_left">
+                    </div>
+                    <div class="contentWrapper_right">
+                        <a href ="../Default.aspx">Home</a> 
+                        <br />
+                        <div style = "padding-top: 1px; float: right; padding-right: 30px;">
+                            <object type="application/x-shockwave-flash" data="<%=Request.ApplicationPath%>/GeneralSection/Images/ballclock.swf" width="70" height="70" wmode="transparent">
+                                <param name="movie" value="<%=Request.ApplicationPath%>/Admin/Images/ballclock.swf" />
+                            </object>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id = "topMenuSection">
+                <div style = "width: 980px; margin: auto; text-align: left; line-height: 30px; padding-left: 20px; padding-right: 24px; color: #fff">
+                    <marquee bgcolor="" color="#FF0000" face="Verdana" font="" scrolldelay="60" scrollamount="3" onmouseout="this.start()" onmouseover="this.stop()" direction="left" behavior="Scroll">
+                        Welcome to the WebSites of CBSE Senoir Secondary and Secondary Schools , please login with your valid credentials...
+                    </marquee>
+                </div>
+            </div>
+        </div>
+        <div id ="mainContainer">
+            <div id = "MainBodySection">
+                <div id="lowerBodyContainer">
+                <p></p>
+                    <uc1:ucEncryptedLogin ID="ucEncryptedLogin1" runat="server" />
+
+                    <div style = "clear: both"></div>
+                </div>
+            </div>
+        </div>
+        <<div id="footer-wrap">
+                <div id="footerSection">
+                    
+                    <div id = "footerSecondRow"></div>
+                    <div id = "footerThirdRow" style="color:Black;">Disclaimer  |  Terms of Use</div>
+                    <div id = "footerFourthRow"></div>
+                </div>
+            </div>  
+    </form>
+</body>
+</html>
